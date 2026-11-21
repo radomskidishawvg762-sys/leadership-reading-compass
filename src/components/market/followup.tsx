@@ -3,9 +3,9 @@ import { ArrowRight, MessageSquare, Send } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { formatDate, getObject, resolveQuestion, type MarketEvent } from '@/lib/market-data';
+import { formatDate, getObject, getSource, type MarketEvent } from '@/lib/market-data';
 import { getReadingEdition, type ReadingScope } from '@/lib/reading-editions';
-import type { ChatResult, ChatTurn } from '@/lib/hybrid-ai';
+import { fixedAnswer, type ChatResult, type ChatTurn } from '@/lib/hybrid-ai';
 import { SourceLinks } from './reading';
 
 type AiState = { key: string; status: 'loading' | 'ready' | 'error'; answer?: string; sourceIds: string[]; error?: string };
@@ -16,7 +16,8 @@ export function Followup({event,question,scope,prompt}:{
   const [input,setInput] = useState('');
   const [ai,setAi] = useState<AiState|null>(null);
   const navigate = useNavigate({from:'/events/$eventId'});
-  const answer = resolveQuestion(event,question);
+  const fixed = fixedAnswer(event, question);
+  const answer = fixed ? event.questions.find(item => item.answer === fixed.answer) : undefined;
   const object = answer?.objectId ? getObject(answer.objectId) : undefined;
   const edition = getReadingEdition(scope)!;
   const sessionKey = [event.id,scope.issue ?? '',scope.month ?? ''].join(':');
@@ -30,7 +31,7 @@ export function Followup({event,question,scope,prompt}:{
       session.current = sessionKey;
     }
     // Fixed question answers are synchronous and never call the model.
-    if (!question || resolveQuestion(event, question)) {
+    if (!question || fixedAnswer(event, question)) {
       setAi(null);
       return;
     }
@@ -51,7 +52,7 @@ export function Followup({event,question,scope,prompt}:{
       if (typeof result.answer !== 'string' || !Array.isArray(result.sourceIds)) throw new Error('AI 服务回答格式异常。');
       if (controller.signal.aborted) return;
       history.current = [...previous, {role:'user',content:question}, {role:'assistant',content:result.answer}].slice(-8) as ChatTurn[];
-      setAi({ key:requestKey, status:'ready', answer:result.answer, sourceIds:result.sourceIds.filter(id=>event.sources.includes(id)) });
+      setAi({ key:requestKey, status:'ready', answer:result.answer, sourceIds:result.sourceIds.filter(id=>{const source=getSource(id);return source?.kind === '外部材料' && source.date <= edition.cutoff && (event.public ? Boolean(source.url) : true);}) });
     }).catch((error:unknown) => {
       if (controller.signal.aborted) return;
       setAi({ key:requestKey,status:'error',error: error instanceof Error ? error.message : 'AI 服务暂不可用。',sourceIds:[] });
