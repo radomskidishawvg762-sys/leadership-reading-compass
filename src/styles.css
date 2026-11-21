@@ -437,3 +437,29 @@ footer { border-top:1px solid var(--border); }
   .weekly-watch li { grid-template-columns:1fr; gap:2px; }
   .weekly-main .judgment-row { grid-template-columns:70px minmax(0,1fr); }
 }
+
+
+/* Shared editorial canvas for weekly and monthly reports. */
+.brief-frame { width:100%; max-width:1120px; margin-inline:auto; min-width:0; }
+.brief-frame .page-heading { width:100%; }
+.brief-frame--monthly .monthly-paper { max-width:none; margin-inline:0; }
+.brief-frame--weekly .weekly-grid { grid-template-columns:minmax(0,1fr) minmax(235px,270px); gap:clamp(24px,3vw,42px); }
+.weekly-feature-lead { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,0.75fr); gap:18px; align-items:start; }
+.weekly-feature-lead > div { min-width:0; }
+.weekly-feature-lead .editorial-image { margin:3px 0 0; }
+.weekly-feature-lead .editorial-image img { aspect-ratio:1.75; object-fit:cover; }
+.weekly-feature-lead .editorial-image figcaption { font-size:9px; }
+@media (max-width:1000px) {
+  .brief-frame--weekly .weekly-grid { grid-template-columns:minmax(0,1fr) minmax(205px,240px); gap:24px; }
+  .weekly-feature-lead { gap:12px; grid-template-columns:minmax(0,1fr) minmax(0,0.62fr); }
+}
+@media (max-width:760px) {
+  .brief-frame { max-width:none; }
+  .brief-frame--weekly .weekly-grid { display:block; }
+  .weekly-feature-lead { grid-template-columns:minmax(0,1fr) minmax(0,0.65fr); }
+}
+@media (max-width:540px) {
+  .weekly-feature-lead { grid-template-columns:1fr; }
+  .weekly-feature-lead .editorial-image { margin:8px 0 0; }
+  .weekly-feature-lead .editorial-image img { aspect-ratio:3.4; }
+}
