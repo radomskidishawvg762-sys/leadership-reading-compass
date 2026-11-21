@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PageHeading, EventActions, EventKicker, LatestReports } from '@/components/market/reading';
+import { PageHeading, EventActions, EventKicker, LatestReports, EditorialImage } from '@/components/market/reading';
 import { usePublication } from '@/components/market/publication';
 import { contentHead, formatDate, getWeeklyItems, issues } from '@/lib/market-data';
 import { eventAt } from '@/lib/reading-editions';
@@ -24,7 +24,7 @@ function Index() {
     return event && isLeaderMaterial(event.id,stage) ? [{event,date:item.date}] : [];
   });
 
-  return <>
+  return <div className="brief-frame brief-frame--weekly">
     <PageHeading title="本周速览" eyebrow="集团经营动态" meta={<><span>{formatDate(issue.start)} — {formatDate(issue.end)}</span><span className="divider" /><span>第 {issue.number} 期</span></>}>
       <div className="issue-control"><select className="select-control" aria-label="选择周报期次" value={issue.id}
         onChange={event=>navigate({search:{issue:event.target.value}})}>
@@ -36,8 +36,13 @@ function Index() {
         <section className="weekly-main" aria-label="本期重点变化">
           {items.map(({event,date},index)=><article className={`story ${index===0?'featured':''}`} id={`story-${event.id}`} key={event.id}>
             <div className="story-kicker"><EventKicker event={event} /><span>{event.public?'公开资料':'业务样例'}</span><span className="story-date">{formatDate(date)}</span></div>
-            <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{event.title}</Link></h2>
-            <p className="story-judgment">{event.judgment}</p>
+            <div className={index===0 && issue.id===issues[0]?.id ? 'weekly-feature-lead' : ''}>
+              <div>
+                <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{event.title}</Link></h2>
+                <p className="story-judgment">{event.judgment}</p>
+              </div>
+              {index===0 && issue.id===issues[0]?.id && <EditorialImage kind="week" eager />}
+            </div>
             <div className="judgment-lines">
               <div className="judgment-row"><span className="judgment-label">关键事实</span><span>{event.fact}</span></div>
               <div className="judgment-row"><span className="judgment-label">经营影响</span><span>{event.relation}</span></div>
@@ -59,5 +64,5 @@ function Index() {
       </div>
       <LatestReports scope={scope} />
     </div>
-  </>;
+  </div>;
 }
