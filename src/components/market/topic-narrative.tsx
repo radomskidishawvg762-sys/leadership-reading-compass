@@ -20,6 +20,8 @@ const HEADINGS: Record<string, string> = {
 };
 export function parseTopicNarrative(input: string): TopicNarrative[] {
   const normalized = input.replace(/\r\n?/g,'\n')
+    .replace(/\*\*(?=【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|关键缺口|数据缺口|待核实|研判结论)】)/g,'')
+    .replace(/(【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|关键缺口|数据缺口|待核实|研判结论)】)\*\*/g,'$1')
     .replace(/([^\n])\s*(【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|关键缺口|数据缺口|待核实|研判结论)】)/g,'$1\n$2')
     .replace(/([^\n])\s+(?=[1-3][.、]\s*[^\d\s])/g,'$1\n');
   const sections: TopicNarrative[] = [];
@@ -68,6 +70,28 @@ function LinkedCitation({kind,index,research,allowedSourceIds,allowedEventIds}:{
     title={event.title} aria-label={`关联事件：${event.title}`}>{index+1}</Link>;
   return <span className="topic-citation topic-citation--unknown" title="模型引用未能核实" aria-label="未核实的引用">?</span>;
 }
+export type InlineSegment={type:'text'|'bold'|'italic'|'code';text:string};
+/** Never use raw HTML: only parse a few common Markdown delimiters into React nodes. */
+export function formatInlineSegments(value:string):InlineSegment[]{
+  const out:InlineSegment[]=[];
+  const regex=/(\\*\\*([^*\\n]+)\\*\\*|__([^_\\n]+)__|(?<!\\*)\\*([^*\\n]+)\\*(?!\\*)|(?<!_)_([^_\\n]+)_(?!_)|`([^`\\n]+)`)/g;
+  let last=0,match:RegExpExecArray|null;
+  while((match=regex.exec(value))){
+    if(match.index>last)out.push({type:'text',text:value.slice(last,match.index)});
+    const type=match[2]||match[3]?'bold':match[4]||match[5]?'italic':'code';
+    out.push({type,text:match[2]??match[3]??match[4]??match[5]??match[6]??''});
+    last=regex.lastIndex;
+  }
+  if(last<value.length)out.push({type:'text',text:value.slice(last)});
+  return out;
+}
+function RichText({value}:{value:string}){
+  return <>{formatInlineSegments(value).map((segment,i)=>
+    segment.type==='bold'?<strong key={i}>{segment.text}</strong>:
+    segment.type==='italic'?<em key={i}>{segment.text}</em>:
+    segment.type==='code'?<code key={i}>{segment.text}</code>:
+    <span key={i}>{segment.text}</span>)}</>;
+}
 function NarrativeLine({text,research,sourceIds,eventIds}:{
   text:string;research:TopicResearch;sourceIds:string[];eventIds:string[];
 }) {
@@ -87,7 +111,7 @@ function NarrativeLine({text,research,sourceIds,eventIds}:{
     group=[];
   };
   for(const token of tokens){
-    if(token.type==='text'){flush();elements.push(<span key={`text-${elements.length}`}>{token.text}</span>);}
+    if(token.type==='text'){flush();elements.push(<span key={`text-${elements.length}`}><RichText value={token.text}/></span>);}
     else group.push(token);
   }
   flush();
