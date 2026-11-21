@@ -1,0 +1,27 @@
+name: Validate hybrid AI fallback (no deployment)
+
+on:
+  push:
+    branches:
+      - feat/hybrid-ai-fallback-20261121
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Run tests (including fixed-answer regression)
+        run: bun run test
+      - name: Build Cloudflare Workers
+        run: bun run build:cloudflare
+      - name: Validate deploy package without publishing
+        run: bunx wrangler deploy --dry-run
