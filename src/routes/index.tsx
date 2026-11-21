@@ -31,18 +31,16 @@ function Index() {
         {issues.map(item=><option key={item.id} value={item.id}>{formatDate(item.end)} · 第{item.number}期</option>)}
       </select></div>
     </PageHeading>
+    {items.length>0 && issue.id===issues[0]?.id && <div className="weekly-hero" aria-label="本周市场观察场景示意">
+      <EditorialImage kind="week" eager />
+    </div>}
     <div className="weekly-grid">
       <div>
         <section className="weekly-main" aria-label="本期重点变化">
           {items.map(({event,date},index)=><article className={`story ${index===0?'featured':''}`} id={`story-${event.id}`} key={event.id}>
             <div className="story-kicker"><EventKicker event={event} /><span>{event.public?'公开资料':'业务样例'}</span><span className="story-date">{formatDate(date)}</span></div>
-            <div className={index===0 && issue.id===issues[0]?.id ? 'weekly-feature-lead' : ''}>
-              <div>
-                <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{event.title}</Link></h2>
-                <p className="story-judgment">{event.judgment}</p>
-              </div>
-              {index===0 && issue.id===issues[0]?.id && <EditorialImage kind="week" eager />}
-            </div>
+            <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{event.title}</Link></h2>
+            <p className="story-judgment">{event.judgment}</p>
             <div className="judgment-lines">
               <div className="judgment-row"><span className="judgment-label">关键事实</span><span>{event.fact}</span></div>
               <div className="judgment-row"><span className="judgment-label">经营影响</span><span>{event.relation}</span></div>
