@@ -137,12 +137,12 @@ function Topics(){
       </select>
       <Button type="submit" disabled={!input.trim()}><Search size={16}/>研判分析</Button>
     </form>
-    <div className="topic-v21-featured" aria-label="精选研究专题">
+    {Boolean(topic.q) && <div className="topic-v21-featured" aria-label="精选研究专题">
       <span className="topic-v21-featured-label">本期精选 · 3 个专题</span>
       {featuredPinned.map(feature=><button type="button" key={feature.id}
         className={research.topicId===feature.id?'topic-v21-chip active':'topic-v21-chip'}
         onClick={()=>openFeatured(feature.id,feature.title)}>{feature.title}</button>)}
-    </div>
+    </div>}
 
     {!topic.q ? <section className="topic-v21-intro">
       <div className="topic-v21-intro-head">
