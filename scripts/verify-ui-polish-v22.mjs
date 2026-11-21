@@ -31,7 +31,7 @@ try{
   if(await page.locator('.report-reading-item').count()<1)throw Error('No editorial report rows');
   await page.locator('.report-reading-item').first().click();
   await page.locator('.detail-editorial-overline').waitFor({timeout:15000});
-  await page.locator('.detail-judgment-label').getByText('当前研判').waitFor();
+  await page.locator('.detail-judgment-label').getByText('研判').waitFor();
   console.log('Editorial list, deep link, detail reading hierarchy verified');
   if(errors.length)throw Error('Browser errors: '+errors.join('; '));
 }finally{await browser.close();}
