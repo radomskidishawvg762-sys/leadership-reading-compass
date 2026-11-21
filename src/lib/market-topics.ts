@@ -14,6 +14,24 @@ export const featuredTopics = [
     eventIds: ['EV-PUBLIC-005', 'EV-PUBLIC-001', 'EV-PUBLIC-002'],
   },
   {
+    id: 'housing-cash', title: '房建资金压力如何传导到合同？',
+    description: '联动房建到位资金、新开工与行业发运，研究合同首款、垫资和信用条件的核实顺序。',
+    queries: ['房建资金压力','房建回款','合同质量','房建新开工'],
+    eventIds: ['EV-PUBLIC-003', 'EV-PUBLIC-002'],
+  },
+  {
+    id: 'infrastructure', title: '基建投资分化，机会在哪里？',
+    description: '从基建投资结构与行业需求样本出发，区分投资增长信号和真实项目采购机会。',
+    queries: ['基建投资分化','基建机会','交通工程','项目机会'],
+    eventIds: ['EV-PUBLIC-004', 'EV-PUBLIC-002', 'EV-PUBLIC-003'],
+  },
+  {
+    id: 'regional-price', title: '郑州和成都的价格为何不同？',
+    description: '对照区域混凝土与水泥公开报价，核对规格、时间和成本传导口径。',
+    queries: ['郑州成都价格','区域价格比较','区域成本'],
+    eventIds: ['EV-PUBLIC-005', 'EV-PUBLIC-001'],
+  },
+  {
     id: 'green-building', title: '绿色建材名录对采购有什么影响？',
     description: '查福州、鄂州新公布的名录，以及需要到招采文件里核对的条件。',
     queries: ['绿色建材', '福州', '鄂州', '认证', '绿色建材名录'],
