@@ -15,5 +15,6 @@
         "period": 60
       }
     }
-  ]
+  ],
+  "keep_vars": true
 }
