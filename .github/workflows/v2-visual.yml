@@ -1,0 +1,19 @@
+name: Verify V2 visual alignment
+on:
+  push:
+    branches: [feat/v2-visual-alignment-20261121]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - run: bun run build:cloudflare
+      - run: bunx wrangler deploy --dry-run
