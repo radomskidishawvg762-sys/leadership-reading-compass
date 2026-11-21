@@ -23,7 +23,7 @@ function Monthly() {
     return event ? [{...item, event}] : [];
   });
 
-  return <>
+  return <div className="brief-frame brief-frame--monthly">
     <PageHeading title="月度简报" eyebrow="市场监测" meta={<span>{formatDate(issue.start)} — {formatDate(issue.end)}</span>}>
       <div className="issue-control no-print">
         <select aria-label="选择月份" className="select-control" value={issue.id} onChange={e=>navigate({search:{month:e.target.value}})}>
@@ -74,5 +74,5 @@ function Monthly() {
       </section>}
       <div className="monthly-foot"><span>每期简报按当期截止日查阅</span><span>内部经营关联使用样例数据</span></div>
     </article>
-  </>;
+  </div>;
 }
