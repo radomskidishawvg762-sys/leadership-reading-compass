@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a href="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}><Newspaper />本周速览</a>
       <a href="/monthly" className={`nav-item ${pathname === '/monthly' ? 'active' : ''}`}><FileText />月度简报</a>
       <a href="/reports" className={`nav-item ${pathname === '/reports' || pathname.startsWith('/events') ? 'active' : ''}`}><BookOpen />事件专报</a>
-      <a href="/topics" className={`nav-item ${pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><Search />专题查询</a>
+      <a href="/topics" className={`nav-item ${pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><Search />专题研判</a>
       <div className="nav-status"><span className="status-dot" />公开资料与业务样例</div>
     </div></nav>
     <main className="container soft-enter">{children}</main>
