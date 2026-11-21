@@ -3,5 +3,17 @@
   "name": "leadership-reading-compass",
   "main": "src/server.ts",
   "compatibility_date": "2026-11-21",
-  "observability": { "enabled": true }
+  "observability": {
+    "enabled": true
+  },
+  "ratelimits": [
+    {
+      "name": "AI_RATE_LIMITER",
+      "namespace_id": "18240621",
+      "simple": {
+        "limit": 8,
+        "period": 60
+      }
+    }
+  ]
 }
