@@ -7,6 +7,7 @@ page.on('pageerror', error=>errors.push('pageerror: '+error.message));
 page.on('requestfailed', req=>errors.push('request failed: '+req.url()+' '+req.failure()?.errorText));
 page.on('console', msg=>{ if(msg.type()==='error')errors.push('console: '+msg.text().slice(0,250)) });
 async function assertPage(name, expectedUrl) {
+  await page.waitForFunction((name) => document.querySelector('main h1')?.textContent?.trim() === name, name, {timeout:15000});
   const heading=await page.locator('main h1').first().textContent({timeout:15000});
   console.log('page',name,'heading=',heading,'url=',page.url());
   if(heading?.trim()!==name)throw Error(`expected ${name}, got ${heading}, url=${page.url()}, browser errors=${JSON.stringify(errors)}`);
