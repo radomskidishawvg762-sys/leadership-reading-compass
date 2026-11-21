@@ -26,6 +26,8 @@ export type TopicResearch = {
 const windows: TopicWindow[] = ['7d','30d','90d','all'];
 const norm = (value: string) => value.normalize('NFKC').toLowerCase().replace(/[\s，。！？、,.?!：:；;（）()]/g,'');
 const areaWords = ['郑州','河南','成都','福州','鄂州','武汉','重庆'];
+const placeMatches = (area:string, region:string) => region.includes(area) || (area === '河南' && region.includes('郑州')) || (area === '郑州' && region.includes('河南'));
+const topicWords = ['水泥','混凝土','原料','价格','涨价','毛利','成本','传导','绿色建材','认证','资质','采购','政策','需求','资金','房建','基建','投资','发运','订单','交付','信用','风险'];
 const themes: Array<{words:string[]; ids:string[]}> = [
   {words:['原料','水泥','成本','涨价','报价','价格','毛利','传导','郑州','成都'],ids:['EV-PUBLIC-001','EV-PUBLIC-005']},
   {words:['需求','发运','房地产','房建','基建','投资','开工','资金','订单','市场'],ids:['EV-PUBLIC-002','EV-PUBLIC-003','EV-PUBLIC-004']},
@@ -65,23 +67,23 @@ export function getTopicResearch(input: TopicInput, options: { includeDemo?: boo
 
   const areas = areaWords.filter(word=>term.includes(word));
   const relevantThemes = themes.filter(theme=>theme.words.some(word=>term.includes(word)));
+  const relevantWords = topicWords.filter(word=>term.includes(word));
   for(const theme of relevantThemes)for(const id of theme.ids)matched.add(id);
 
   const ranked=visible.map(event=>{
     const words=norm([event.title,event.region,event.fact,event.type,event.judgment].join(' '));
     const sourceText=event.sources.map(id=>getSource(id)?.title ?? '').join('');
-    const matchedWords = relevantThemes.flatMap(item=>item.words).filter(word=>term.includes(word));
+    const matchedWords = relevantWords;
     const score=(matched.has(event.id)?7:0)+
       matchedWords.reduce((sum,word)=>sum + ((words.includes(norm(word)) || sourceText.includes(word))?2:0),0) +
-      (areas.some(area=>event.region.includes(area))?5:0);
+      (areas.some(area=>placeMatches(area,event.region))?5:0);
     return {event,score};
   }).filter(({event,score})=>{
     if(!score) return false;
     if(!areas.length) return true;
     // An explicit region query must not pull unrelated national stories just because
     // the question also says "价格" or "需求".
-    return areas.some(area=>event.region.includes(area)) ||
-      (feature?.eventIds.includes(event.id) && areas.length===0);
+    return areas.some(area=>placeMatches(area,event.region));
   }).sort((a,b)=>b.score-a.score || b.event.date.localeCompare(a.event.date))
     .slice(0,8).map(item=>item.event);
 
