@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "leadership-reading-compass",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-11-21",
+  "observability": { "enabled": true }
+}
