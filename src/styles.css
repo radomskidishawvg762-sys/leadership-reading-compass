@@ -440,7 +440,7 @@ footer { border-top:1px solid var(--border); }
 
 
 /* Shared editorial canvas for weekly and monthly reports. */
-.brief-frame { width:100%; max-width:1120px; margin-inline:auto; min-width:0; }
+.brief-frame { width:100%; max-width:none; margin-inline:0; min-width:0; }
 .brief-frame .page-heading { width:100%; }
 .brief-frame--monthly .monthly-paper { max-width:none; margin-inline:0; }
 .brief-frame--weekly .weekly-grid { grid-template-columns:minmax(0,1fr) minmax(235px,270px); gap:clamp(24px,3vw,42px); }
@@ -490,4 +490,22 @@ footer { border-top:1px solid var(--border); }
 main.container.soft-enter { animation:none; }
 @media(min-width:761px) {
   main.container { padding-top:28px; }
+}
+
+
+/* V2 shared editorial rhythm. Full-width page edges, restrained text measure. */
+.brief-frame .page-heading { margin-bottom:22px; }
+.brief-frame--weekly .weekly-hero { margin:0 0 18px; }
+.brief-frame--weekly .weekly-grid { grid-template-columns:minmax(0,1fr) minmax(235px,290px); gap:clamp(28px,3.5vw,46px); }
+.brief-frame--monthly .monthly-paper { width:100%; }
+.brief-frame--monthly .monthly-lead { gap:clamp(20px,2.5vw,32px); }
+.brief-frame--monthly .monthly-item-body { max-width:880px; }
+.brief-frame--monthly .monthly-item { padding:18px 0; }
+.brief-frame--monthly .monthly-reading-notes { line-height:1.7; }
+@media(max-width:1000px) {
+  .brief-frame--weekly .weekly-grid { grid-template-columns:minmax(0,1fr) minmax(200px,240px); gap:24px; }
+}
+@media(max-width:760px) {
+  .brief-frame--weekly .weekly-grid { display:block; }
+  .brief-frame--monthly .monthly-item { padding:14px 0; }
 }
