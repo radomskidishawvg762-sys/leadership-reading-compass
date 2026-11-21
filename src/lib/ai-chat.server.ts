@@ -93,7 +93,7 @@ export async function handleAiChatRequest(request: Request, bindings: unknown): 
     const choices = (output as {choices?:Array<{message?:{content?:unknown}}>})?.choices;
     const content = choices?.[0]?.message?.content;
     if (typeof content !== 'string' || !content.trim()) return json({ error: '模型没有返回有效回答。' }, 502);
-    const citationNumbers = [...content.matchAll(/\\[S(\\d+)\\]/g)]
+    const citationNumbers = [...content.matchAll(/\[S(\d+)\]/g)]
       .map(match => Number(match[1]) - 1)
       .filter(number => Number.isInteger(number) && number >= 0 && number < evidence.length);
     const sourceIds = [...new Set(citationNumbers)].map(index => evidence[index]!.id);
