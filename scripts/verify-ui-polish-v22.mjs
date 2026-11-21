@@ -27,11 +27,11 @@ try{
   await page.locator('.topic-v21-source-list summary').click();
   if(await page.locator('.topic-v21-source-rows a').count()<1)throw Error('Source details failed to expand');
   await page.goto(origin+'/reports',{waitUntil:'domcontentloaded'});
-  await page.locator('.report-editorial-intro').waitFor({timeout:15000});
-  if(await page.locator('.report-editorial-card').count()<1)throw Error('No editorial report cards');
-  await page.locator('.report-editorial-card').first().click();
+  await page.locator('.report-reading-intro').waitFor({timeout:15000});
+  if(await page.locator('.report-reading-item').count()<1)throw Error('No editorial report rows');
+  await page.locator('.report-reading-item').first().click();
   await page.locator('.detail-editorial-overline').waitFor({timeout:15000});
-  await page.locator('.detail-judgment-label').getByText('当前研判').waitFor();
-  console.log('Report list, deep link, detail editorial header verified');
+  await page.locator('.detail-judgment-label').getByText('研判').waitFor();
+  console.log('Editorial list, deep link, detail reading hierarchy verified');
   if(errors.length)throw Error('Browser errors: '+errors.join('; '));
 }finally{await browser.close();}

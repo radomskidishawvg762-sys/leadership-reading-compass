@@ -151,7 +151,7 @@ function Topics(){
       <section className="topic-v21-heading">
         <div><div className="eyebrow">综合研判 · {research.window==='all'?'全部历史':windows.find(item=>item.value===research.window)?.label}</div>
           <h2>{topic.q}</h2>
-          <p>关联 {research.events.length} 个规范事件 · {research.sources.length} 份去重来源 · 截至 {formatDate(research.cutoff)}</p>
+          <p>参考 {research.events.length} 条相关动态 · {research.sources.length} 份来源 · 资料截至 {formatDate(research.cutoff)}</p>
         </div>
         <span className="topic-v21-scope">公开资料专题</span>
       </section>
@@ -162,12 +162,14 @@ function Topics(){
         <div className="topic-v21-layout">
           <div className="topic-v21-main">
             <section className="topic-v21-analysis" aria-label="专题研判摘要">
-              <h3><BookOpen size={18}/>综合研判摘要</h3>
+              <h3><BookOpen size={17}/>研判摘要</h3>
               {exchanges[0]?.status==='ready'?<>
                 <TopicNarrativeView answer={exchanges[0].data!.answer} research={research}
                   sourceIds={exchanges[0].data!.sourceIds} eventIds={exchanges[0].data!.eventIds}/>
                 {!!exchanges[0].data?.sourceIds.length&&
-                  <SourceLinks ids={exchanges[0].data!.sourceIds}/>}
+                  <details className="topic-cited-sources"><summary>查看本次研判引用的原始材料</summary>
+                    <SourceLinks ids={exchanges[0].data!.sourceIds}/>
+                  </details>}
               </>:exchanges[0]?.status==='error'?<>
                 <p className="topic-v21-muted">{exchanges[0].error}</p>
                 <p className="topic-v21-muted">下方保留原有事件判断与来源，可以继续核对。</p>
@@ -182,7 +184,9 @@ function Topics(){
                 {turn.status==='ready'?<>
                   <TopicNarrativeView answer={turn.data!.answer} research={research}
                     sourceIds={turn.data!.sourceIds} eventIds={turn.data!.eventIds}/>
-                  {!!turn.data?.sourceIds.length&&<SourceLinks ids={turn.data!.sourceIds}/>}
+                  {!!turn.data?.sourceIds.length&&<details className="topic-cited-sources">
+                    <summary>查看这轮回答的资料依据</summary><SourceLinks ids={turn.data!.sourceIds}/>
+                  </details>}
                 </>:<p className="topic-v21-muted">{turn.status==='loading'?'正在基于专题资料分析……':turn.error}</p>}
               </article>)}
               <form className="topic-v21-ask" onSubmit={event=>{
@@ -196,7 +200,7 @@ function Topics(){
             </section>
           </div>
           <aside className="topic-v21-aside" aria-label="关联事件与来源">
-            <h3>关联事件与依据 <span>{research.events.length}</span></h3>
+            <h3>相关动态 <span>{research.events.length}</span></h3>
             {research.events.map(event=><article className="topic-v21-event" key={event.id}>
               <div className="topic-v21-event-meta"><time>{formatDate(event.date)}</time><span>{event.region}</span></div>
               <h4><Link to="/events/$eventId" params={{eventId:event.id}}>{event.title}<ArrowRight size={13}/></Link></h4>
@@ -212,7 +216,7 @@ function Topics(){
             </details>
           </aside>
         </div>
-        <p className="topic-v21-disclaimer"><ShieldCheck size={15}/>每个关联事项沿用唯一事件 ID；专题引用不生成重复事件。公开行业数据与集团内部实际经营数据须区分。</p>
+        <p className="topic-v21-disclaimer"><ShieldCheck size={15}/>来源与历史记录均可查看；公开市场信息不代表集团实际经营数据。</p>
       </>}
     </>}
   </>;

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight, BookOpen, FileCheck2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DateMeta, EventKicker, PageHeading } from '@/components/market/reading';
+import { EventKicker, PageHeading } from '@/components/market/reading';
 import { usePublication } from '@/components/market/publication';
 import { getReportBrief, isPublishedReport } from '@/lib/report-workflow';
 import { contentHead, events } from '@/lib/market-data';
@@ -31,15 +31,10 @@ function Reports() {
 
   return <>
     <PageHeading title="事件专报" eyebrow="市场监测" meta="重点变化、经营影响与复核节点" />
-    <section className="report-editorial-intro" aria-label="专报导读">
-      <div>
-        <span className="eyebrow">事件深度研判 · 一事一报</span>
-        <h2>将重点变化转化为有依据的经营判断</h2>
-        <p>围绕具体事项查看经营影响、原始证据、复核节点和后续进展。每份专报沿用原事件编号，不重复创建材料。</p>
-      </div>
-      <div className="report-editorial-stat"><BookOpen size={19} aria-hidden="true" />
-        <strong>{reports.length}</strong><span>份可阅读专报</span></div>
-    </section>
+    <div className="report-reading-intro">
+      <p>重要变化及其对经营的影响。按事项阅读判断、核查证据和后续关注节点。</p>
+      <span>{reports.length} 份已收录专报 · 一事一报</span>
+    </div>
     <div className="filters">
       <select className="select-control" aria-label="筛选区域" value={search.region ?? ''} onChange={event => navigate({ search: { ...search, region: event.target.value } })}>
         <option value="">全部区域</option>
@@ -52,17 +47,17 @@ function Reports() {
       {(search.region || search.type) && <Button variant="ghost" size="sm" onClick={() => navigate({ search: {} })}>重置</Button>}
       <span className="result-count">{filtered.length} 条专报</span>
     </div>
-    <section className="report-editorial-list" aria-label="专题事件专报列表">
-      {filtered.map((event,index) => (
-        <Link key={event.id} className="report-row report-row--brief report-editorial-card" to="/events/$eventId" params={{ eventId:event.id }}>
-          <div className="report-editorial-number">{String(index+1).padStart(2,'0')}</div>
-          <div className="report-editorial-card-main">
-            <div className="story-kicker"><EventKicker event={event} /><span className="report-meta"><DateMeta date={event.date} publicMaterial={Boolean(event.public)} /></span></div>
+    <section className="report-editorial-list report-reading-list" aria-label="事件专报列表">
+      {filtered.map((event) => (
+        <Link key={event.id} className="report-reading-item" to="/events/$eventId" params={{eventId:event.id}}>
+          <div className="report-reading-date">{event.date.replaceAll('-','.')}<span>{event.public?'公开资料':'业务样例'}</span></div>
+          <div className="report-reading-body">
+            <div className="report-reading-kicker"><EventKicker event={event}/></div>
             <h2>{event.title}</h2>
-            <p className="report-editorial-judgment">{event.judgment}</p>
-            <p className="report-checkpoint"><FileCheck2 size={14} aria-hidden="true"/><strong>复核节点</strong> {getReportBrief(event.id)?.checkpoint ?? event.attention}</p>
+            <p className="report-reading-judgment">{event.judgment}</p>
+            <p className="report-reading-checkpoint"><span>后续关注</span>{getReportBrief(event.id)?.checkpoint ?? event.attention}</p>
           </div>
-          <ArrowRight size={17} aria-hidden="true" />
+          <ArrowRight size={17} aria-hidden="true"/>
         </Link>
       ))}
     </section>
