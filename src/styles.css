@@ -484,3 +484,10 @@ footer { border-top:1px solid var(--border); }
   .brief-frame--weekly .weekly-hero { margin:0 0 16px; }
   .brief-frame--weekly .weekly-hero .editorial-image img { aspect-ratio:3.8; max-height:145px; }
 }
+
+
+/* Avoid an artificial transition delaying perceived content on each full-page navigation. */
+main.container.soft-enter { animation:none; }
+@media(min-width:761px) {
+  main.container { padding-top:28px; }
+}
