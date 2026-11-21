@@ -20,7 +20,7 @@ try {
   await assertPage('本周速览','/');
   await page.waitForTimeout(1200);
   const nav=page.locator('nav.main-nav');
-  for(const [label,url] of [['月度简报','/monthly'],['专题查询','/topics'],['事件专报','/reports'],['本周速览','/']]){
+  for(const [label,url] of [['月度简报','/monthly'],['专题研判','/topics'],['事件专报','/reports'],['本周速览','/']]){
     const start=Date.now();
     await nav.getByRole('link',{name:label}).click();
     await page.waitForURL(origin+url,{timeout:20000});
