@@ -30,7 +30,13 @@ function Reports() {
   );
 
   return <>
-    <PageHeading title="事件专报" eyebrow="市场监测" meta="重点变化、经营影响与复核节点" />
+    <div className="report-heading-with-image">
+      <PageHeading title="事件专报" eyebrow="市场监测" meta="重点变化、经营影响与复核节点" />
+      <figure className="report-heading-visual">
+        <img src="/market/project.webp" alt="城市建设场景示意" width={460} height={170} decoding="async" />
+        <figcaption>场景示意</figcaption>
+      </figure>
+    </div>
     <div className="report-reading-intro">
       <p>重要变化及其对经营的影响。按事项阅读判断、核查证据和后续关注节点。</p>
       <span>{reports.length} 份已收录专报 · 一事一报</span>

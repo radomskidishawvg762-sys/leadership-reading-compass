@@ -1,5 +1,6 @@
 import { completionUrl } from './ai-chat.server';
 import { getTopicResearch, parseTopicInput, type TopicInput, type TopicResearch } from './topic-research';
+import { scopePinnedEvidence } from './topic-snapshots';
 import type { ChatTurn } from './hybrid-ai';
 
 type RateLimiter = {limit(args:{key:string}):Promise<{success:boolean}>};
@@ -74,7 +75,7 @@ export async function handleTopicChatRequest(request:Request,bindings:unknown):P
   if(!input)return json({error:'专题、问题或对话历史格式不正确。'},400);
   // Never trust client-provided event ids or source ids. Rebuild the authoritative
   // public-only topic evidence set on every request.
-  const research=getTopicResearch(input.topic,{includeDemo:false});
+  const research=scopePinnedEvidence(input.topic,getTopicResearch(input.topic,{includeDemo:false}));
   if(!research.events.length || !research.sources.length)
     return json({error:'当前时间范围内缺少可引用的公开事件证据。'},422);
   const env=(bindings??{}) as Env;

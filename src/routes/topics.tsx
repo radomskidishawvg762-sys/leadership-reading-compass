@@ -9,6 +9,7 @@ import { contentHead, formatDate } from '@/lib/market-data';
 import { featuredTopics } from '@/lib/market-topics';
 import { currentCutoff } from '@/lib/reading-editions';
 import { getTopicResearch, type TopicWindow, type TopicInput } from '@/lib/topic-research';
+import { pinnedTopicIds, isPinnedSnapshotRequest, getFixedTopicAnswer, scopePinnedEvidence } from '@/lib/topic-snapshots';
 import type { ChatTurn } from '@/lib/hybrid-ai';
 
 const windows: Array<{value:TopicWindow;label:string}> = [
@@ -43,7 +44,9 @@ function Topics(){
   const topic:TopicInput=useMemo(()=>({
     q:search.q??'',window,...(search.topicId?{topicId:search.topicId}:{})
   }),[search.q,search.topicId,window]);
-  const research=useMemo(()=>getTopicResearch(topic,{includeDemo:false}),[topic]);
+  const research=useMemo(()=>scopePinnedEvidence(topic,getTopicResearch(topic,{includeDemo:false})),[topic]);
+  const featuredPinned=featuredTopics.filter(feature=>pinnedTopicIds.some(id=>id===feature.id));
+  const fixedSnapshot=useMemo(()=>getFixedTopicAnswer(topic,research),[topic,research]);
   const key=[topic.q,topic.window,topic.topicId??''].join('|');
   useEffect(()=>setInput(search.q??''),[search.q]);
 
@@ -100,11 +103,18 @@ function Topics(){
     setExchanges([]);
     setDraft('');
     setBusy(false);
-    if(topic.q&&research.events.length&&research.sources.length){
-      void ask('请基于当前专题所有关联事件与公开来源，综合判断本议题的主要变化、经营影响与优先行动，并注明证据范围。',true);
+    const frozen=getFixedTopicAnswer(topic,research);
+    if(frozen){
+      setExchanges([{question:topic.q,status:'ready',data:{
+        answer:frozen.answer,sourceIds:frozen.sourceIds,eventIds:frozen.eventIds,
+      }}]);
+    }else if(topic.q&&research.events.length&&research.sources.length){
+      if(!isPinnedSnapshotRequest(topic)){
+        void ask('请基于当前专题所有关联事件与公开来源，综合判断本议题的主要变化、经营影响与优先行动，并注明证据范围。',true);
+      }
     }
     return ()=>pending.current?.abort();
-  },[key,ask,topic.q,research.events.length,research.sources.length]);
+  },[key,ask,topic.q,research]);
 
   function runSearch(event:React.FormEvent){
     event.preventDefault();
@@ -127,21 +137,21 @@ function Topics(){
       </select>
       <Button type="submit" disabled={!input.trim()}><Search size={16}/>研判分析</Button>
     </form>
-    <div className="topic-v21-featured" aria-label="精选研究专题">
-      <span className="topic-v21-featured-label">本期推荐 · 6 个研究方向</span>
-      {featuredTopics.map(feature=><button type="button" key={feature.id}
+    {Boolean(topic.q) && <div className="topic-v21-featured" aria-label="精选研究专题">
+      <span className="topic-v21-featured-label">本期精选 · 3 个专题</span>
+      {featuredPinned.map(feature=><button type="button" key={feature.id}
         className={research.topicId===feature.id?'topic-v21-chip active':'topic-v21-chip'}
         onClick={()=>openFeatured(feature.id,feature.title)}>{feature.title}</button>)}
-    </div>
+    </div>}
 
     {!topic.q ? <section className="topic-v21-intro">
       <div className="topic-v21-intro-head">
         <h2>从一个经营问题开始</h2>
-        <p>从本期推荐的六个方向切入，也可以自由输入新的区域或经营问题；只使用已收录的公开证据。</p>
+        <p>从三个精选专题快速了解重要议题；也可自由输入区域或经营问题，按时间范围动态研判。</p>
       </div>
       <div className="topic-v21-intro-grid">
-        {featuredTopics.map(feature=><article className="topic-v21-entry" key={feature.id}>
-          <span className="eyebrow">推荐研究 · {String(featuredTopics.indexOf(feature)+1).padStart(2, "0")}</span><h3>{feature.title}</h3>
+        {featuredPinned.map(feature=><article className="topic-v21-entry" key={feature.id}>
+          <span className="eyebrow">推荐研究 · {String(featuredPinned.indexOf(feature)+1).padStart(2, "0")}</span><h3>{feature.title}</h3>
           <p>{feature.description}</p>
           <button type="button" onClick={()=>openFeatured(feature.id,feature.title)}>进入专题 <ArrowRight size={14}/></button>
         </article>)}
@@ -163,6 +173,8 @@ function Topics(){
           <div className="topic-v21-main">
             <section className="topic-v21-analysis" aria-label="专题研判摘要">
               <h3><BookOpen size={17}/>研判摘要</h3>
+              {fixedSnapshot && <p className="topic-fixed-meta">本期固定研判 · v{fixedSnapshot.version} · 资料截至 {formatDate(fixedSnapshot.cutoff)}{fixedSnapshot.stale?' · 资料可能已更新':''}</p>}
+              {isPinnedSnapshotRequest(topic) && !fixedSnapshot && <p className="topic-v21-muted">本期固定研判已与关联资料不匹配，暂不展示旧结论。请调整查询范围或使用自由搜索。</p>}
               {exchanges[0]?.status==='ready'?<>
                 <TopicNarrativeView answer={exchanges[0].data!.answer} research={research}
                   sourceIds={exchanges[0].data!.sourceIds} eventIds={exchanges[0].data!.eventIds}/>

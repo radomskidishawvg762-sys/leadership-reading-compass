@@ -797,3 +797,25 @@ main.container.soft-enter { animation:none; }
   .topic-narrative-heading{margin-bottom:6px}
 }
 @media(prefers-reduced-motion:reduce){.report-reading-item>svg{transition:none}}
+
+
+/* V2.4 refined report reading measure and single low-cost existing image. */
+.report-heading-with-image{display:flex;align-items:center;justify-content:space-between;gap:36px;max-width:1080px;margin-bottom:5px}
+.report-heading-with-image .page-heading{min-width:0;flex:1}
+.report-heading-visual{position:relative;flex:0 0 280px;height:104px;margin:0;border-radius:2px;overflow:hidden;background:var(--muted)}
+.report-heading-visual img{display:block;width:100%;height:100%;object-fit:cover;opacity:.86}
+.report-heading-visual:after{content:"";position:absolute;inset:0;border:1px solid rgba(34,60,49,.10);pointer-events:none}
+.report-heading-visual figcaption{position:absolute;bottom:7px;right:9px;font-size:10px;color:white;background:rgba(16,37,30,.56);padding:2px 6px;letter-spacing:.02em}
+.report-reading-intro,.report-reading-list{width:100%;max-width:1080px}
+.report-reading-intro{padding:0 0 15px;gap:16px}
+.report-reading-intro p{line-height:1.65;font-size:13px}
+.report-reading-item{grid-template-columns:96px minmax(0,1fr) 16px;column-gap:23px;padding:20px 2px}
+.report-reading-body h2{font-size:19px;line-height:1.4;margin:6px 0}
+.report-reading-judgment{line-height:1.65}
+.report-reading-checkpoint{margin-top:8px;line-height:1.6}
+.topic-fixed-meta{font-size:11px;line-height:1.7;color:var(--muted-foreground);margin:-7px 0 15px;letter-spacing:.01em}
+@media(max-width:760px){
+  .report-heading-with-image{display:block}
+  .report-heading-visual{display:none}
+  .report-reading-item{grid-template-columns:minmax(0,1fr) 16px;gap:10px;padding:17px 0}
+}
