@@ -10,7 +10,7 @@ try{
   if(await page.locator('.topic-v21-chip').count()!==6)throw Error('Expected six quick topic choices');
   console.log('Six curated topics displayed');
   await page.route('**/api/topic-chat',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
-    answer:'【核心判断】郑州水泥成本上行，但混凝土市场售价持平，不能推定集团利润已下降。[S1][E1]\\n【主要依据】郑州市场 C30 报价周度持平。[S1]\\n【建议行动】1. 优先筛查固定价格合同。\\n2. 核实实际到货价。\\n【关键缺口】实际成交与采购记录。',
+    answer:'【核心判断】郑州水泥成本上行，但混凝土市场售价持平，不能推定集团利润已下降。[S1][E1]\n【主要依据】郑州市场 C30 报价周度持平。[S1]\n【建议行动】1. 优先筛查固定价格合同。\n2. 核实实际到货价。\n【关键缺口】实际成交与采购记录。',
     sourceIds:['public-zhengzhou'],eventIds:['EV-PUBLIC-005'],
   })}));
   await page.goto(origin+'/topics?q=郑州成都价格&window=all&topicId=regional-price',{waitUntil:'domcontentloaded'});
