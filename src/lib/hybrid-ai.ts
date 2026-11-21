@@ -115,13 +115,18 @@ export function aiMessages(input: ChatRequest, event: MarketEvent, evidence: Evi
   const background = [
     `当前分析对象：${event.title}；地区：${event.region}；截至 ${getReadingEdition(input.scope)?.cutoff ?? event.date}`,
     `材料类型：${event.public ? '公开市场材料' : '虚构业务演示情境，不能作为企业真实经营记录'}`,
-    `事件事实：${event.fact}`,
-    `已有研判（仅供核对）：${event.judgment}`,
-    `可能的业务传导：${event.relation}`,
-    `业务影响假设：${event.impact}`,
-    `已有建议：${event.attention}`,
-    `仍待核实：${event.pending.slice(0,3).join('；') || '无已列明项目'}`,
-    `事件进展：${event.timeline.slice(-3).map(t => t.date + ' ' + t.title).join('；')}`,
+    ...(event.public ? [
+      `事件事实：${event.fact}`,
+      `已有研判（仅供核对）：${event.judgment}`,
+      `可能的业务传导：${event.relation}`,
+      `业务影响假设：${event.impact}`,
+      `已有建议：${event.attention}`,
+      `仍待核实：${event.pending.slice(0,3).join('；') || '无已列明项目'}`,
+      `事件进展：${event.timeline.slice(-3).map(t => t.date + ' ' + t.title).join('；')}`,
+    ] : [
+      '演示事件仅提供可外发的模拟材料摘要。公司内部快照、合同明细、模拟应收余额及由其衍生的经营判断一律不发送给第三方模型。',
+      '请根据下方演示材料给出条件性分析，无法核实的经营数额不要复述。',
+    ]),
     '证据（仅下列编号可引用，优先使用当前事件的材料）：',
     sourcesText,
   ].join('\n');
