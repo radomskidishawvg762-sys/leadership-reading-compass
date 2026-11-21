@@ -34,7 +34,7 @@ function Index() {
     <div className="weekly-grid">
       <div>
         <section className="weekly-main" aria-label="本期重点变化">
-          {items.map(({event,date})=><article className={`story ${index===0?'featured':''}`} id={`story-${event.id}`} key={event.id}>
+          {items.map(({event,date},index)=><article className={`story ${index===0?'featured':''}`} id={`story-${event.id}`} key={event.id}>
             <div className="story-kicker"><EventKicker event={event} /><span>{event.public?'公开资料':'业务样例'}</span><span className="story-date">{formatDate(date)}</span></div>
             <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{event.title}</Link></h2>
             <p className="story-judgment">{event.judgment}</p>
