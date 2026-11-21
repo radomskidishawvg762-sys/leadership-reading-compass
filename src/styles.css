@@ -415,3 +415,25 @@ footer { border-top:1px solid var(--border); }
   .report-meta { margin-left:0; }
   .report-brief { grid-template-columns:1fr; gap:.7rem; }
 }
+
+
+/* V2 weekly brief: compact reading, one next-week focus list. */
+.weekly-main .story { padding:15px 0 16px; }
+.weekly-main .story.featured { padding-top:18px; }
+.weekly-main .story-kicker { margin-bottom:7px; }
+.weekly-main .story h2 { font-size:clamp(17px,1.55vw,21px); line-height:1.45; }
+.weekly-main .story-judgment { margin-top:4px; line-height:1.6; }
+.weekly-main .judgment-lines { margin-top:10px; gap:5px; }
+.weekly-main .judgment-row { font-size:12px; line-height:1.65; }
+.weekly-main .story-actions { margin-top:8px; }
+.weekly-watch { margin-top:20px; border-top:2px solid var(--primary); padding:15px 0; }
+.weekly-watch h2 { font-size:17px; font-weight:600; color:var(--primary); margin-bottom:10px; }
+.weekly-watch ol { list-style:decimal; padding-left:22px; display:grid; gap:8px; }
+.weekly-watch li { display:grid; grid-template-columns:minmax(60px,90px) minmax(0,1fr) auto; gap:10px; font-size:12px; line-height:1.65; }
+.weekly-watch-region { color:var(--primary); font-weight:600; }
+.weekly-watch a { color:var(--primary); white-space:nowrap; text-decoration:underline; text-underline-offset:3px; }
+.weekly-watch p { font-size:11px; color:var(--muted-foreground); margin-top:10px; }
+@media(max-width:720px) {
+  .weekly-watch li { grid-template-columns:1fr; gap:2px; }
+  .weekly-main .judgment-row { grid-template-columns:70px minmax(0,1fr); }
+}
