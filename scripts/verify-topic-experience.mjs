@@ -5,6 +5,14 @@ const page=await browser.newPage({viewport:{width:1440,height:900}});
 const errors=[];
 page.on('pageerror',err=>errors.push(err.message));
 try{
+  let aiCalls=0;
+  await page.route('**/api/topic-chat',route=>{
+    aiCalls++;
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+      answer:'【核心判断】先核实合同首款与资金保障。[S1]',
+      sourceIds:['public-housing'],eventIds:['EV-PUBLIC-003'],
+    })});
+  });
   await page.goto(origin+'/topics',{waitUntil:'domcontentloaded'});
   await page.locator('main h1').getByText('专题研判').waitFor();
   await page.getByRole('button',{name:'房建资金压力如何传导到合同？'}).first().click();
@@ -18,6 +26,12 @@ try{
   if(!ids.every(href=>href?.startsWith('/events/EV-')))throw Error('Missing event deep-link');
   await page.locator('.topic-fixed-meta').first().waitFor();
   if(!(await page.locator('.topic-v21-analysis').innerText()).includes('资金'))throw Error('Pinned static analysis missing');
+  if(aiCalls!==0)throw Error('Pinned topic initial opening must not call model API');
+  await page.getByLabel('专题连续追问').fill('先核实什么？');
+  await page.getByRole('button',{name:'追问'}).click();
+  await page.locator('.topic-v21-turn').last().getByText(/先核实合同首款/).waitFor({timeout:10000});
+  if(aiCalls!==1)throw Error('Follow-up should trigger exactly one model request');
+  console.log('Pinned topic instant render, zero initial API requests, one follow-up request');
   await page.getByLabel('专题时间窗').selectOption('7d');
   await page.waitForURL(/window=7d/);
   await page.locator('.topic-v21-event').first().waitFor();
