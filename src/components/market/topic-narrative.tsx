@@ -74,7 +74,7 @@ export type InlineSegment={type:'text'|'bold'|'italic'|'code';text:string};
 /** Never use raw HTML: only parse a few common Markdown delimiters into React nodes. */
 export function formatInlineSegments(value:string):InlineSegment[]{
   const out:InlineSegment[]=[];
-  const regex=/(\\*\\*([^*\\n]+)\\*\\*|__([^_\\n]+)__|(?<!\\*)\\*([^*\\n]+)\\*(?!\\*)|(?<!_)_([^_\\n]+)_(?!_)|`([^`\\n]+)`)/g;
+  const regex=/(\*\*([^*\n]+)\*\*|__([^_\n]+)__|(?<!\*)\*([^*\n]+)\*(?!\*)|(?<!_)_([^_\n]+)_(?!_)|`([^`\n]+)`)/g;
   let last=0,match:RegExpExecArray|null;
   while((match=regex.exec(value))){
     if(match.index>last)out.push({type:'text',text:value.slice(last,match.index)});
@@ -95,7 +95,7 @@ function RichText({value}:{value:string}){
 function NarrativeLine({text,research,sourceIds,eventIds}:{
   text:string;research:TopicResearch;sourceIds:string[];eventIds:string[];
 }) {
-  const trimmed=text.replace(/^[-•]\s*/,'').replace(/^([1-9])[.、]\s*/, '$1. ');
+  const trimmed=text.replace(/^\s*[-•*+]\s+/,'').replace(/^([1-9])[.、]\s*/, '$1. ');
   const tokens=tokenizeCitations(trimmed);
   const elements:ReactNode[]=[];
   let group:CitationToken[]=[];
