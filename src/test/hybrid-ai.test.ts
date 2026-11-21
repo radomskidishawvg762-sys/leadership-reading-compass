@@ -4,7 +4,7 @@ import { aiMessages, evidenceForAi, fixedAnswer, parseChatRequest } from '@/lib/
 import { handleAiChatRequest } from '@/lib/ai-chat.server';
 
 const url = 'https://demo.example/api/ai-chat';
-const input = { eventId:'EV-PUBLIC-005', question:'请分析当前材料能否推断集团利润变化', scope:{}, history:[] };
+const input = { eventId:'EV-PUBLIC-005', question:'当前证据还存在哪些需要再验证的假设', scope:{}, history:[] };
 const request = (value:unknown) => new Request(url, {
   method:'POST', headers:{'Content-Type':'application/json',Origin:'https://demo.example'}, body:JSON.stringify(value)
 });
