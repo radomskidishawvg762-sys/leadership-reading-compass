@@ -1,0 +1,35 @@
+name: V2.1 topic research verification (no deployment)
+on:
+  push:
+    branches:
+      - feat/topic-v21-unified-research-20261121
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - run: bun install --frozen-lockfile
+      - name: All regression and topic tests
+        run: bun run test
+      - name: Cloudflare production build
+        run: bun run build:cloudflare
+      - name: Wrangler deployment dry run
+        run: bunx wrangler deploy --dry-run
+      - name: Start Cloudflare Worker preview
+        run: |
+          bunx vite preview --config vite.cloudflare.config.ts --host 127.0.0.1 --port 4173 > /tmp/worker-preview.log 2>&1 &
+          echo $! > /tmp/worker-preview.pid
+      - name: Verify SSR routes and resources
+        run: node scripts/verify-worker-pages.mjs
+      - name: Browser navigation and topic interaction smoke
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts playwright-core
+          node scripts/verify-browser-navigation.mjs
+      - if: failure()
+        run: cat /tmp/worker-preview.log || true
