@@ -463,3 +463,24 @@ footer { border-top:1px solid var(--border); }
   .weekly-feature-lead .editorial-image { margin:8px 0 0; }
   .weekly-feature-lead .editorial-image img { aspect-ratio:3.4; }
 }
+
+
+/* Standalone report photography — not embedded in an event summary. */
+.brief-frame--weekly .weekly-hero { margin:-5px 0 22px; overflow:hidden; border-radius:6px; }
+.brief-frame--weekly .weekly-hero .editorial-image { margin:0; }
+.brief-frame--weekly .weekly-hero .editorial-image img { aspect-ratio:7.2; width:100%; object-fit:cover; object-position:center 52%; max-height:170px; }
+.brief-frame--weekly .weekly-hero .editorial-image figcaption { bottom:8px; right:10px; }
+.brief-frame--weekly .page-heading { margin-bottom:18px; }
+.brief-frame--weekly .story { padding:11px 0 12px; }
+.brief-frame--weekly .story.featured { padding-top:14px; }
+.brief-frame--weekly .story h2 { font-size:clamp(17px,1.45vw,20px); line-height:1.4; }
+.brief-frame--weekly .story-kicker { margin-bottom:5px; }
+.brief-frame--weekly .story-judgment { margin-top:4px; line-height:1.55; }
+.brief-frame--weekly .judgment-lines { margin-top:8px; gap:4px; }
+.brief-frame--weekly .judgment-row { line-height:1.6; }
+.brief-frame--weekly .story-actions { margin-top:5px; }
+.brief-frame--weekly .weekly-watch { margin-top:14px; padding-top:12px; }
+@media(max-width:760px) {
+  .brief-frame--weekly .weekly-hero { margin:0 0 16px; }
+  .brief-frame--weekly .weekly-hero .editorial-image img { aspect-ratio:3.8; max-height:145px; }
+}
