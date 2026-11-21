@@ -49,7 +49,7 @@ export async function handleAiChatRequest(request: Request, bindings: unknown): 
   const fixed = fixedAnswer(event, input.question);
   if (fixed) return json(fixed);
 
-  const evidence = evidenceForAi(event);
+  const evidence = evidenceForAi(event, input);
   if (!evidence.length) return json({ error: '当前材料缺少可供 AI 引用的外部证据。' }, 422);
   const env = (bindings ?? {}) as AiEnv;
   if (!env.AI_API_KEY || !env.AI_BASE_URL || !env.AI_MODEL) {
@@ -83,7 +83,7 @@ export async function handleAiChatRequest(request: Request, bindings: unknown): 
         model: env.AI_MODEL,
         messages: aiMessages(input, event, evidence),
         temperature: 0.2,
-        max_tokens: 650,
+        max_tokens: 1150,
         stream: false,
       }),
       signal: AbortSignal.timeout(20000),
@@ -97,7 +97,7 @@ export async function handleAiChatRequest(request: Request, bindings: unknown): 
       .map(match => Number(match[1]) - 1)
       .filter(number => Number.isInteger(number) && number >= 0 && number < evidence.length);
     const sourceIds = [...new Set(citationNumbers)].map(index => evidence[index]!.id);
-    return json({ mode: 'ai', answer: content.trim().slice(0, 2500), sourceIds });
+    return json({ mode: 'ai', answer: content.trim().slice(0, 3400), sourceIds });
   } catch {
     // Never surface provider errors that may contain tokens or internal details.
     return json({ error: 'AI 请求失败或超时，固定问答仍可使用。' }, 502);
