@@ -30,10 +30,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     </header>
     <nav className="main-nav" aria-label="主导航"><div className="container nav-inner">
-      <Link to="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}><Newspaper />本周速览</Link>
-      <Link to="/monthly" className={`nav-item ${pathname === '/monthly' ? 'active' : ''}`}><FileText />月度简报</Link>
-      <Link to="/reports" className={`nav-item ${pathname === '/reports' || pathname.startsWith('/events') ? 'active' : ''}`}><BookOpen />事件专报</Link>
-      <Link to="/topics" className={`nav-item ${pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><Search />专题查询</Link>
+      <a href="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}><Newspaper />本周速览</a>
+      <a href="/monthly" className={`nav-item ${pathname === '/monthly' ? 'active' : ''}`}><FileText />月度简报</a>
+      <a href="/reports" className={`nav-item ${pathname === '/reports' || pathname.startsWith('/events') ? 'active' : ''}`}><BookOpen />事件专报</a>
+      <a href="/topics" className={`nav-item ${pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><Search />专题查询</a>
       <div className="nav-status"><span className="status-dot" />公开资料与业务样例</div>
     </div></nav>
     <main className="container soft-enter">{children}</main>

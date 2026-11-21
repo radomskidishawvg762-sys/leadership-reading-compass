@@ -1,0 +1,33 @@
+name: Diagnose Worker SSR navigation and assets
+on:
+  push:
+    branches:
+      - fix/navigation-performance-hero-20261121
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Build Worker
+        run: bun run build:cloudflare
+      - name: Start Worker preview
+        run: |
+          bunx vite preview --config vite.cloudflare.config.ts --host 127.0.0.1 --port 4173 > /tmp/worker-preview.log 2>&1 &
+          echo $! > /tmp/worker-preview.pid
+      - name: Test real SSR routes and page assets
+        run: node scripts/verify-worker-pages.mjs
+      - name: Install browser test driver
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright-core
+      - name: Verify actual browser navigation
+        run: node scripts/verify-browser-navigation.mjs
+      - name: Print preview diagnostics on failure
+        if: failure()
+        run: cat /tmp/worker-preview.log || true
