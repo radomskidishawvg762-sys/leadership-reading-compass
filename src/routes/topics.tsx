@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, FileText, MessageSquare, Search, Send, ShieldChec
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PageHeading, SourceLinks } from '@/components/market/reading';
+import { TopicNarrativeView } from '@/components/market/topic-narrative';
 import { contentHead, formatDate } from '@/lib/market-data';
 import { featuredTopics } from '@/lib/market-topics';
 import { currentCutoff } from '@/lib/reading-editions';
@@ -127,7 +128,7 @@ function Topics(){
       <Button type="submit" disabled={!input.trim()}><Search size={16}/>研判分析</Button>
     </form>
     <div className="topic-v21-featured" aria-label="精选研究专题">
-      <span className="topic-v21-featured-label">精选专题</span>
+      <span className="topic-v21-featured-label">本期推荐 · 6 个研究方向</span>
       {featuredTopics.map(feature=><button type="button" key={feature.id}
         className={research.topicId===feature.id?'topic-v21-chip active':'topic-v21-chip'}
         onClick={()=>openFeatured(feature.id,feature.title)}>{feature.title}</button>)}
@@ -136,11 +137,11 @@ function Topics(){
     {!topic.q ? <section className="topic-v21-intro">
       <div className="topic-v21-intro-head">
         <h2>从一个经营问题开始</h2>
-        <p>先检索可核实的事件，再形成专题判断；可以追问整个专题，并从证据下钻到原事件。</p>
+        <p>从本期推荐的六个方向切入，也可以自由输入新的区域或经营问题；只使用已收录的公开证据。</p>
       </div>
       <div className="topic-v21-intro-grid">
         {featuredTopics.map(feature=><article className="topic-v21-entry" key={feature.id}>
-          <span className="eyebrow">专题研究</span><h3>{feature.title}</h3>
+          <span className="eyebrow">推荐研究 · {String(featuredTopics.indexOf(feature)+1).padStart(2, "0")}</span><h3>{feature.title}</h3>
           <p>{feature.description}</p>
           <button type="button" onClick={()=>openFeatured(feature.id,feature.title)}>进入专题 <ArrowRight size={14}/></button>
         </article>)}
@@ -163,7 +164,8 @@ function Topics(){
             <section className="topic-v21-analysis" aria-label="专题研判摘要">
               <h3><BookOpen size={18}/>综合研判摘要</h3>
               {exchanges[0]?.status==='ready'?<>
-                <p className="topic-v21-ai-text">{exchanges[0].data?.answer}</p>
+                <TopicNarrativeView answer={exchanges[0].data!.answer} research={research}
+                  sourceIds={exchanges[0].data!.sourceIds} eventIds={exchanges[0].data!.eventIds}/>
                 {!!exchanges[0].data?.sourceIds.length&&
                   <SourceLinks ids={exchanges[0].data!.sourceIds}/>}
               </>:exchanges[0]?.status==='error'?<>
@@ -178,7 +180,8 @@ function Topics(){
               {exchanges.slice(1).map((turn,index)=><article key={index} className="topic-v21-turn">
                 <h4>{turn.question}</h4>
                 {turn.status==='ready'?<>
-                  <p className="topic-v21-ai-text">{turn.data?.answer}</p>
+                  <TopicNarrativeView answer={turn.data!.answer} research={research}
+                    sourceIds={turn.data!.sourceIds} eventIds={turn.data!.eventIds}/>
                   {!!turn.data?.sourceIds.length&&<SourceLinks ids={turn.data!.sourceIds}/>}
                 </>:<p className="topic-v21-muted">{turn.status==='loading'?'正在基于专题资料分析……':turn.error}</p>}
               </article>)}
@@ -200,10 +203,13 @@ function Topics(){
               <p>{event.judgment}</p>
               <div className="topic-v21-event-foot"><span>{event.type}</span><span>{event.sourceIds.length} 份证据</span></div>
             </article>)}
-            <div className="topic-v21-source-list"><h4><FileText size={15}/>独立来源 {research.sources.length}</h4>
-              {research.sources.map(source=><Link key={source.id} to="/sources/$sourceId" params={{sourceId:source.id}}>
-                {source.organization} · {formatDate(source.date)}<ArrowRight size={12}/></Link>)}
-            </div>
+            <details className="topic-v21-source-list">
+              <summary><FileText size={15}/>全部来源与原始材料 <span>{research.sources.length} 份</span></summary>
+              <div className="topic-v21-source-rows">
+                {research.sources.map(source=><Link key={source.id} to="/sources/$sourceId" params={{sourceId:source.id}}>
+                  {source.organization} · {formatDate(source.date)}<ArrowRight size={12}/></Link>)}
+              </div>
+            </details>
           </aside>
         </div>
         <p className="topic-v21-disclaimer"><ShieldCheck size={15}/>每个关联事项沿用唯一事件 ID；专题引用不生成重复事件。公开行业数据与集团内部实际经营数据须区分。</p>
