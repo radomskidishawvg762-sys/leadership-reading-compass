@@ -53,6 +53,7 @@ function EventDetail() {
   const brief = isPublishedReport(event.id, stage, edition.cutoff) ? getReportBrief(event.id) : undefined;
   return <><BackLink /><div className="detail-layout"><article>
     <header className="detail-header">
+      <div className="detail-editorial-overline"><span>事件专报</span><span>单一事件 · 证据与处置研判</span></div>
       <div className="story-kicker"><EventKicker event={event} /></div>
       <h1>{event.title}</h1>
       <div className="heading-meta">
@@ -60,7 +61,7 @@ function EventDetail() {
         <span>{edition.label} · 截至 {formatDate(edition.cutoff)}</span>
         {edition.cutoff<currentCutoff && <Link className="text-action" to="/events/$eventId" params={{eventId:event.id}} search={{}}>看最新进展</Link>}
       </div>
-      <div className="detail-judgment">{event.judgment}</div>
+      <div className="detail-judgment"><span className="detail-judgment-label">当前研判</span><p>{event.judgment}</p></div>
     </header>
     {event.type==='项目机会' && <EditorialImage kind="project" />}
     <div className="detail-jumps no-print" aria-label="事件内导航">
@@ -110,7 +111,7 @@ function EventDetail() {
       <Timeline items={event.timeline} scope={scope} />
     </section>
   </article><aside className="detail-aside">
-    <h3>研判摘要</h3>
+    <div className="detail-aside-head"><span className="eyebrow">阅读提要</span><h3>研判摘要</h3></div>
     <div className="aside-line"><span>经营范围</span>{event.region}</div>
     <div className="aside-line"><span>证据截至</span>{formatDate(edition.cutoff)}</div>
     <div className="aside-line"><span>可查依据</span>{materials.length} 份</div>
