@@ -61,9 +61,10 @@ export async function handleAiChatRequest(request: Request, bindings: unknown): 
 
   // Approximate Cloudflare rate limits; do not count deterministic answers.
   // Cloudflare Access / provider budget limits are still recommended for public URLs.
-  if (env.AI_RATE_LIMITER) {
+  if (!env.AI_RATE_LIMITER) return json({ error: 'AI 访问限流尚未配置。' }, 503);
+  {
     try {
-      const key = request.headers.get('CF-Connecting-IP') ?? 'unknown';
+      const key = request.headers.get('CF-Connecting-IP') ?? 'anonymous';
       const outcome = await env.AI_RATE_LIMITER.limit({key: `ai-fallback:${key}`});
       if (!outcome.success) return json({ error: 'AI 提问过于频繁，请稍后再试。' }, 429);
     } catch {
@@ -92,7 +93,11 @@ export async function handleAiChatRequest(request: Request, bindings: unknown): 
     const choices = (output as {choices?:Array<{message?:{content?:unknown}}>})?.choices;
     const content = choices?.[0]?.message?.content;
     if (typeof content !== 'string' || !content.trim()) return json({ error: '模型没有返回有效回答。' }, 502);
-    return json({ mode: 'ai', answer: content.trim().slice(0, 2500), sourceIds: evidence.map(source => source.id) });
+    const citationNumbers = [...content.matchAll(/\\[S(\\d+)\\]/g)]
+      .map(match => Number(match[1]) - 1)
+      .filter(number => Number.isInteger(number) && number >= 0 && number < evidence.length);
+    const sourceIds = [...new Set(citationNumbers)].map(index => evidence[index]!.id);
+    return json({ mode: 'ai', answer: content.trim().slice(0, 2500), sourceIds });
   } catch {
     // Never surface provider errors that may contain tokens or internal details.
     return json({ error: 'AI 请求失败或超时，固定问答仍可使用。' }, 502);
