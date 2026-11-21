@@ -1,0 +1,39 @@
+name: Verify restrained editorial design V2.3
+on:
+  push:
+    branches:
+      - feat/editorial-v23-20261122
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - name: Install
+        run: bun install --frozen-lockfile
+      - name: Run all regression and formatting tests
+        run: bun run test
+      - name: Build Worker
+        run: bun run build:cloudflare
+      - name: Validate Worker bundle without deploying
+        run: bunx wrangler deploy --dry-run
+      - name: Start local Worker preview
+        run: |
+          bunx vite preview --config vite.cloudflare.config.ts --host 127.0.0.1 --port 4173 > /tmp/worker-preview.log 2>&1 &
+          echo $! > /tmp/worker-preview.pid
+      - name: Verify rendered SSR routes and assets
+        run: node scripts/verify-worker-pages.mjs
+      - name: Desktop navigation and editorial interactions
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts playwright-core
+          node scripts/verify-browser-navigation.mjs
+          node scripts/verify-topic-experience.mjs
+          node scripts/verify-ui-polish-v22.mjs
+      - name: Print Worker logs on failure
+        if: failure()
+        run: cat /tmp/worker-preview.log || true
