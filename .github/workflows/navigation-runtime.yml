@@ -24,6 +24,10 @@ jobs:
           echo $! > /tmp/worker-preview.pid
       - name: Test real SSR routes and page assets
         run: node scripts/verify-worker-pages.mjs
+      - name: Install browser test driver
+        run: npm install --no-save --package-lock=false --ignore-scripts playwright-core
+      - name: Verify actual browser navigation
+        run: node scripts/verify-browser-navigation.mjs
       - name: Print preview diagnostics on failure
         if: failure()
         run: cat /tmp/worker-preview.log || true
