@@ -52,7 +52,10 @@ export function fixedAnswer(event: MarketEvent, question: string): ChatResult | 
   if (!normalized) return undefined;
   const explicitlyFixed = event.questions.some(item => normalize(item.label) === normalized ||
     item.aliases?.some(alias => normalize(alias) === normalized));
-  const shortParaphrase = normalized.length <= 12;
+  const shortParaphrase = event.questions.some(item => item.aliases?.some(alias => {
+    const term = normalize(alias);
+    return term.length >= 3 && normalized.includes(term) && normalized.length <= term.length + 4;
+  }));
   if (!explicitlyFixed && !shortParaphrase) return undefined;
   const fixed = resolveQuestion(event, question);
   return fixed ? { mode: 'fixed', answer: fixed.answer, sourceIds: fixed.sourceIds } : undefined;
@@ -111,7 +114,7 @@ export function aiMessages(input: ChatRequest, event: MarketEvent, evidence: Evi
   ).join('\n\n');
   const background = [
     `当前分析对象：${event.title}；地区：${event.region}；截至 ${getReadingEdition(input.scope)?.cutoff ?? event.date}`,
-    `材料类型：${event.public ? '公开市场材料' : '虚构演示情境，不能作为企业真实经营记录'}`,
+    `材料类型：${event.public ? '公开市场材料' : '虚构业务演示情境，不能作为企业真实经营记录'}`,
     `事件事实：${event.fact}`,
     `已有研判（仅供核对）：${event.judgment}`,
     `可能的业务传导：${event.relation}`,
