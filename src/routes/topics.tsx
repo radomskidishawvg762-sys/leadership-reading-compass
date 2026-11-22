@@ -155,11 +155,17 @@ function Topics(){
           <button className="topic-feature-image-button" type="button" aria-label={`打开专题：${feature.title}`}
             onClick={()=>openFeatured(feature.id,feature.title)}>
             <img className="topic-feature-image" src={getTopicVisual(feature.id)?.src}
-              alt={getTopicVisual(feature.id)?.alt ?? '专题场景示意'}
-              width={960} height={540} loading="lazy" decoding="async"/>
-            <span className="topic-feature-image-note">主题场景示意</span>
+              alt={getTopicVisual(feature.id)?.alt ?? '专题行业摄影'}
+              width={960} height={540} loading="lazy" decoding="async"
+              referrerPolicy="no-referrer" onError={event=>{event.currentTarget.style.opacity='0';}}/>
+            <span className="topic-feature-image-note">行业实景摄影 · 非本期事件现场</span>
           </button>
           <div className="topic-feature-copy">
+            {getTopicVisual(feature.id) && <a className="topic-feature-photo-credit"
+              href={getTopicVisual(feature.id)!.photoPage} target="_blank" rel="noopener noreferrer"
+              aria-label={`查看照片摄影师与来源：${getTopicVisual(feature.id)!.photoCredit}`}>
+              摄影：{getTopicVisual(feature.id)!.photoCredit}
+            </a>}
             <span className="topic-feature-kicker">{getTopicVisual(feature.id)?.tag ?? '专题研判'} · {String(featuredPinned.indexOf(feature)+1).padStart(2, "0")}</span>
             <h3>{feature.title}</h3>
             <p>{feature.description}</p>
