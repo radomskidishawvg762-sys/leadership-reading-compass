@@ -10,6 +10,7 @@ import { featuredTopics } from '@/lib/market-topics';
 import { currentCutoff } from '@/lib/reading-editions';
 import { getTopicResearch, type TopicWindow, type TopicInput } from '@/lib/topic-research';
 import { pinnedTopicIds, isPinnedSnapshotRequest, getFixedTopicAnswer, scopePinnedEvidence } from '@/lib/topic-snapshots';
+import { getTopicVisual } from '@/lib/topic-visuals';
 import type { ChatTurn } from '@/lib/hybrid-ai';
 
 const windows: Array<{value:TopicWindow;label:string}> = [
@@ -150,10 +151,20 @@ function Topics(){
         <p>从三个精选专题快速了解重要议题；也可自由输入区域或经营问题，按时间范围动态研判。</p>
       </div>
       <div className="topic-v21-intro-grid">
-        {featuredPinned.map(feature=><article className="topic-v21-entry" key={feature.id}>
-          <span className="eyebrow">推荐研究 · {String(featuredPinned.indexOf(feature)+1).padStart(2, "0")}</span><h3>{feature.title}</h3>
-          <p>{feature.description}</p>
-          <button type="button" onClick={()=>openFeatured(feature.id,feature.title)}>进入专题 <ArrowRight size={14}/></button>
+        {featuredPinned.map(feature=><article className="topic-v21-entry topic-feature-card" key={feature.id}>
+          <button className="topic-feature-image-button" type="button" aria-label={`打开专题：${feature.title}`}
+            onClick={()=>openFeatured(feature.id,feature.title)}>
+            <img className="topic-feature-image" src={getTopicVisual(feature.id)?.src}
+              alt={getTopicVisual(feature.id)?.alt ?? '专题场景示意'}
+              width={960} height={540} loading="lazy" decoding="async"/>
+            <span className="topic-feature-image-note">主题场景示意</span>
+          </button>
+          <div className="topic-feature-copy">
+            <span className="topic-feature-kicker">{getTopicVisual(feature.id)?.tag ?? '专题研判'} · {String(featuredPinned.indexOf(feature)+1).padStart(2, "0")}</span>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+            <button type="button" onClick={()=>openFeatured(feature.id,feature.title)}>阅读本期研判 <ArrowRight size={14}/></button>
+          </div>
         </article>)}
       </div>
       <p className="topic-v21-disclaimer"><ShieldCheck size={15}/>分析范围仅限本站已收录、当前允许引用的公开资料，不代表集团内部经营数据。</p>
@@ -165,6 +176,21 @@ function Topics(){
         </div>
         <span className="topic-v21-scope">公开资料专题</span>
       </section>
+      {fixedSnapshot && getTopicVisual(topic.topicId) && <section className="topic-evidence-pulse" aria-label="本期专题关键公开信息">
+        <div className="topic-evidence-pulse-head">
+          <span>关键信息</span>
+          <span>{getTopicVisual(topic.topicId)?.note}</span>
+        </div>
+        <div className="topic-evidence-pulse-items">
+          {getTopicVisual(topic.topicId)?.highlights.map(item=><div className="topic-evidence-pulse-item" key={item.label}>
+            <strong>{item.value}</strong><span>{item.label}</span>
+          </div>)}
+          <div className="topic-evidence-pulse-context">
+            <span>研判提示</span>
+            <p>公开市场与政策信号，仅作背景参考；具体经营影响请核对下方证据及实际业务数据。</p>
+          </div>
+        </div>
+      </section>}
       {!research.events.length || !research.sources.length ? <section className="empty-state">
         <h2>当前范围内没有足够的可引用材料</h2>
         <p>可以改用“全部已收录”时间窗，或换一个更具体的区域、市场关键词。不会凭空生成研判。</p>
