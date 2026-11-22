@@ -33,8 +33,10 @@ function Reports() {
     <div className="report-heading-with-image">
       <PageHeading title="事件专报" eyebrow="市场监测" meta="重点变化、经营影响与复核节点" />
       <figure className="report-heading-visual">
-        <img src="/market/project.webp" alt="城市建设场景示意" width={460} height={170} decoding="async" />
-        <figcaption>场景示意</figcaption>
+        <img src="/market/report-market.svg"
+          alt="混凝土生产、运输与城市建设的原创行业场景插画"
+          width={960} height={540} loading="eager" decoding="async" />
+        <figcaption>行业场景示意 · 非事件实景</figcaption>
       </figure>
     </div>
     <div className="report-reading-intro">

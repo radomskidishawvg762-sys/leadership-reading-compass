@@ -1,0 +1,37 @@
+name: V2.5 editorial imagery and layout verification
+on:
+  push:
+    branches: [feat/visual-v25-20261122]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - run: bun install --frozen-lockfile
+      - name: Full unit regression
+        run: bun run test
+      - name: Cloudflare production build
+        run: bun run build:cloudflare
+      - name: Wrangler production dry-run (no deployment)
+        run: bunx wrangler deploy --dry-run
+      - name: Preview production Worker
+        run: |
+          bunx vite preview --config vite.cloudflare.config.ts --host 127.0.0.1 --port 4173 > /tmp/worker-preview.log 2>&1 &
+          echo $! > /tmp/worker-preview.pid
+      - name: Verify routes and assets
+        run: node scripts/verify-worker-pages.mjs
+      - name: "Browser smoke: topic visual triptych, report, AI and deep routes"
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts playwright-core
+          node scripts/verify-browser-navigation.mjs
+          node scripts/verify-topic-experience.mjs
+          node scripts/verify-ui-polish-v22.mjs
+      - name: Print diagnostics on failure
+        if: failure()
+        run: cat /tmp/worker-preview.log || true

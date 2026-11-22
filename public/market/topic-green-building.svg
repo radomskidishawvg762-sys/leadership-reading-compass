@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+<title id="title">绿色建材与生产</title><desc id="desc">绿色建材搅拌生产基地、储料筒仓与绿植的原创场景插画</desc>
+<defs>
+<linearGradient id="sky" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e8eee4"/><stop offset="1" stop-color="#e9e4d2"/></linearGradient>
+<linearGradient id="face" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#8ea99a"/><stop offset="1" stop-color="#4b7168"/></linearGradient>
+<linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dcd6c5"/><stop offset="1" stop-color="#aaa996"/></linearGradient>
+<linearGradient id="jade" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#375f52"/><stop offset="1" stop-color="#1c403a"/></linearGradient>
+<filter id="grain" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence baseFrequency=".48" numOctaves="2" seed="7" result="n"/><feColorMatrix in="n" type="saturate" values="0"/></filter>
+</defs>
+<rect width="960" height="540" fill="url(#sky)"/>
+<circle cx="764" cy="116" r="145" fill="#f9e7b0" opacity=".22"/>
+<path d="M0 332 C200 282 345 349 507 315 S777 270 960 312 V540 H0Z" fill="#b6c5ad" opacity=".35"/>
+
+<path d="M0 394 145 349 340 384 575 351 960 389V540H0Z" fill="#bdcdb4"/>
+<path d="M38 420 450 387 960 408V540H0Z" fill="#a6b9a4"/>
+<path d="M156 291h420v155H156z" fill="#6b8f80"/><path d="m145 291 74-64h429l-72 64Z" fill="#355c51"/>
+<path d="M217 227h420l-64 59H151z" fill="#8fa99d" opacity=".28"/>
+<path d="M200 339h90v107h-90zM311 339h90v107h-90zM422 339h112v107H422z" fill="#cdd7c4"/>
+<path d="M218 339v104m101-103v105m104-105v106" stroke="#f2eee3" stroke-width="3"/>
+<g fill="#d8d7c6" stroke="#3d6859" stroke-width="4"><rect x="598" y="169" width="86" height="250" rx="40"/><rect x="700" y="146" width="80" height="273" rx="38"/><rect x="792" y="194" width="73" height="225" rx="32"/></g>
+<path d="M598 202h86M700 184h80M792 227h73" stroke="#537968" stroke-width="8"/>
+<path d="M643 159v-38M739 137V94M827 184v-50" stroke="#557869" stroke-width="10"/>
+<path d="M594 408h280v24H594z" fill="#3b5d54"/>
+<path d="M0 482C214 440 415 454 557 478S823 481 960 450V540H0Z" fill="#799b78" opacity=".65"/>
+<g fill="#426d58"><path d="M43 426q37-94 71 0q-20 29-71 0"/><path d="M97 436q26-86 66 0q-20 24-66 0"/><path d="M858 442q25-99 68 0q-26 26-68 0"/></g>
+<path d="m563 435 24-24 32 12" fill="none" stroke="#bb9e65" stroke-width="7"/>
+<rect width="960" height="540" filter="url(#grain)" opacity=".055"/>
+</svg>
