@@ -13,6 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build:cloudflare": "vite build --config vite.cloudflare.config.ts",
+    "build:pages-bridge": "bun run build:cloudflare && node scripts/prepare-pages-bridge.mjs",
+    "test:pages-bridge": "node --test scripts/test-pages-bridge.mjs",
     "deploy:cloudflare": "bun run build:cloudflare && wrangler deploy"
   },
   "overrides": {

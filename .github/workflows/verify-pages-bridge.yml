@@ -1,0 +1,42 @@
+name: Verify Pages gateway with Worker service binding (no deployment)
+on:
+  push:
+    branches: [feat/pages-bridge-20261122]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.4"
+      - name: Install lockfile dependencies
+        run: bun install --frozen-lockfile
+      - name: Existing app regression tests
+        run: bun run test
+      - name: Pages bridge routing and secret-isolation tests
+        run: bun run test:pages-bridge
+      - name: Production Worker + Pages static asset build
+        run: bun run build:pages-bridge
+      - name: Validate Pages output artifacts
+        run: |
+          node --input-type=module - <<'JS'
+          import {existsSync,readFileSync,readdirSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const routes=JSON.parse(readFileSync('dist/client/_routes.json','utf8'));
+          assert.deepEqual(routes.include,['/*']);
+          assert.ok(routes.exclude.includes('/market/*'));
+          assert.ok(routes.exclude.includes('/assets/*'));
+          for(const f of ['report-market-v27.webp','topic-housing-v27.webp','topic-infrastructure-v27.webp','topic-green-building-v27.webp']) {
+            assert.ok(existsSync('dist/client/market/'+f), 'Missing local asset '+f);
+          }
+          assert.ok(readdirSync('dist/client/assets').some(x=>x.endsWith('.js')));
+          console.log('Pages static output and routes are present');
+          JS
+      - name: Compile Pages Functions
+        run: bunx wrangler pages functions build functions --outdir .wrangler/pages-bridge-test
+      - name: Confirm original Worker dry run still works
+        run: bunx wrangler deploy --dry-run
