@@ -1,11 +1,11 @@
 /**
- * Licensed photographic references for the three curated research subjects.
- * These are non-event documentary stock photos under Unsplash License.
+ * Locally hosted, optimized licensed photography for curated research subjects.
+ * No runtime request to third-party photo CDN. Sources documented in PHOTO_EDITORIAL_V26.md.
  * Key figures below quote the dated fixed-topic snapshot, not live company data.
  */
 export const topicVisuals = {
   'housing-cash': {
-    src:'https://images.unsplash.com/photo-1746047139717-9cb0a70e0302?auto=format&fit=crop&w=960&q=76',
+    src:'/market/topic-housing-v27.webp',
     alt:'真实施工摄影：城市在建高层建筑与塔吊',
     tag:'资金与合同',
     photoCredit:'Daniel Romero / Unsplash',
@@ -17,7 +17,7 @@ export const topicVisuals = {
     note:'2026年前十个月 · 国家统计局口径',
   },
   infrastructure: {
-    src:'https://images.unsplash.com/photo-1767884161909-1abc7d766341?auto=format&fit=crop&w=960&q=76',
+    src:'/market/topic-infrastructure-v27.webp',
     alt:'真实工程摄影：穿越自然地貌的铁路高架桥',
     tag:'投资与项目机会',
     photoCredit:'Adem Percem / Unsplash',
@@ -29,7 +29,7 @@ export const topicVisuals = {
     note:'2026年前十个月 · 国家统计局口径',
   },
   'green-building': {
-    src:'https://images.unsplash.com/photo-1773592396589-1ac47b18a23e?auto=format&fit=crop&w=960&q=76',
+    src:'/market/topic-green-building-v27.webp',
     alt:'真实绿色建筑摄影：立面覆盖植物的建筑',
     tag:'政策与采购',
     photoCredit:'WILLIAN REIS / Unsplash',
