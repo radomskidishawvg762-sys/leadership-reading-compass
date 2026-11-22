@@ -15,7 +15,7 @@ try{
   });
   await page.goto(origin+'/topics',{waitUntil:'domcontentloaded'});
   await page.locator('main h1').getByText('专题研判').waitFor();
-  await page.locator('.topic-v21-entry').filter({hasText:'房建资金压力如何传导到合同？'}).getByRole('button',{name:/进入专题/}).click();
+  await page.locator('.topic-v21-entry').filter({hasText:'房建资金压力如何传导到合同？'}).getByRole('button',{name:/阅读本期研判/}).click();
   await page.waitForURL(/topicId=housing-cash/,{timeout:15000});
   await page.locator('.topic-v21-event').first().waitFor({timeout:15000});
   const count=await page.locator('.topic-v21-event').count();
