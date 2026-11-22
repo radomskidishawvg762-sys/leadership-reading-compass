@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EventKicker, PageHeading } from '@/components/market/reading';
+import { EventKicker } from '@/components/market/reading';
 import { usePublication } from '@/components/market/publication';
 import { getReportBrief, isPublishedReport } from '@/lib/report-workflow';
 import { contentHead, events } from '@/lib/market-data';
@@ -30,19 +30,22 @@ function Reports() {
   );
 
   return <>
-    <div className="report-heading-with-image">
-      <PageHeading title="事件专报" eyebrow="市场监测" meta="重点变化、经营影响与复核节点" />
-      <figure className="report-heading-visual">
-        <img src="/market/report-market.svg"
-          alt="混凝土生产、运输与城市建设的原创行业场景插画"
-          width={960} height={540} loading="eager" decoding="async" />
-        <figcaption>行业场景示意 · 非事件实景</figcaption>
+    <section className="report-cover" aria-labelledby="report-cover-title">
+      <div className="report-cover-copy">
+        <span className="report-cover-kicker">市场监测 <span aria-hidden="true">/</span> SPECIAL REPORT</span>
+        <h1 id="report-cover-title">事件专报</h1>
+        <p className="report-cover-lead">聚焦重要市场变化，读懂经营影响与复核重点。</p>
+        <p className="report-cover-description">一事一报，保留原始来源和历史进展。先看判断，再按事项深入阅读。</p>
+        <div className="report-cover-foot"><span>{reports.length} 份已收录专报</span><span>资料可追溯</span></div>
+      </div>
+      <figure className="report-cover-photo">
+        <img src="https://images.unsplash.com/photo-1527410651988-c2f385ccd3f7?auto=format&fit=crop&w=1280&q=75"
+          alt="施工现场的混凝土搅拌运输车，真实行业场景摄影"
+          width={1280} height={720} fetchPriority="high" loading="eager" decoding="async"
+          referrerPolicy="no-referrer" />
+        <figcaption>真实场景摄影 · 非本期事件实拍</figcaption>
       </figure>
-    </div>
-    <div className="report-reading-intro">
-      <p>重要变化及其对经营的影响。按事项阅读判断、核查证据和后续关注节点。</p>
-      <span>{reports.length} 份已收录专报 · 一事一报</span>
-    </div>
+    </section>
     <div className="filters">
       <select className="select-control" aria-label="筛选区域" value={search.region ?? ''} onChange={event => navigate({ search: { ...search, region: event.target.value } })}>
         <option value="">全部区域</option>
