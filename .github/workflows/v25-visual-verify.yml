@@ -26,7 +26,7 @@ jobs:
           echo $! > /tmp/worker-preview.pid
       - name: Verify routes and assets
         run: node scripts/verify-worker-pages.mjs
-      - name: Browser smoke: topic visual triptych, report, AI and deep routes
+      - name: "Browser smoke: topic visual triptych, report, AI and deep routes"
         run: |
           npm install --no-save --package-lock=false --ignore-scripts playwright-core
           node scripts/verify-browser-navigation.mjs
