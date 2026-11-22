@@ -872,3 +872,60 @@ main.container.soft-enter { animation:none; }
 .topic-v21-entry.topic-feature-card .topic-feature-image-button{display:block;align-self:stretch;margin:0;padding:0;border:0;line-height:0;border-radius:3px}
 .topic-v21-entry.topic-feature-card .topic-feature-image-button .topic-feature-image-note{line-height:1.4}
 .topic-v21-entry.topic-feature-card .topic-feature-copy>button{margin-top:auto;align-self:flex-start;padding:15px 0 0;line-height:1.5}
+
+
+/* V2.6 — real photographic editorial spread, compact masthead and harmonized measure. */
+.masthead-inner{min-height:76px}
+.brand-symbol{width:44px;height:44px}
+.brand-name{font-size:19px}
+.brand-product{font-size:12px;margin-top:1px}
+.nav-item{height:52px;font-size:14px}
+main.container{padding-top:24px}
+.report-cover{width:100%;max-width:1100px;margin:0 auto 12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,0.92fr);align-items:center;gap:clamp(32px,4vw,62px);min-height:235px}
+.report-cover-copy{min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:3px 0}
+.report-cover-kicker{font-size:11px;letter-spacing:.07em;font-weight:550;color:var(--gold);line-height:1.35}
+.report-cover-kicker span{color:var(--border);margin:0 9px}
+.report-cover-copy h1{font-size:clamp(30px,2.7vw,38px);font-weight:640;line-height:1.2;margin:12px 0 14px}
+.report-cover-lead{font-size:16px;line-height:1.7;font-weight:570;color:var(--primary);max-width:440px}
+.report-cover-description{font-size:12px;line-height:1.85;color:var(--muted-foreground);max-width:415px;margin:9px 0 0}
+.report-cover-foot{display:flex;align-items:center;gap:16px;margin-top:17px;color:var(--muted-foreground);font-size:11px;line-height:1.5}
+.report-cover-foot>span+span{border-left:1px solid var(--border);padding-left:16px}
+.report-cover-photo{width:100%;height:100%;min-height:215px;aspect-ratio:1.94;position:relative;margin:0;overflow:hidden;background:linear-gradient(135deg,#bdc9bd,#dce2d8)}
+.report-cover-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 52%;transition:opacity .2s}
+.report-cover-photo:after{content:"";position:absolute;inset:0;border:1px solid rgba(16,54,43,.07);pointer-events:none}
+.report-cover-photo figcaption{position:absolute;bottom:0;left:0;right:0;z-index:1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;padding:15px 12px 8px;color:white;background:linear-gradient(transparent,rgba(0,0,0,.57));font-size:10px;line-height:1.5}
+.report-cover-photo figcaption a{text-decoration:underline;text-decoration-color:rgba(255,255,255,.5);text-underline-offset:2px}
+.report-cover-photo figcaption a:hover{text-decoration-color:white}
+.report-reading-list,.report-reading-intro{max-width:1100px;margin-inline:auto}
+.report-reading-list{border-top:1px solid var(--border)}
+main.container:has(.report-cover)>.filters{max-width:1100px;margin-left:auto;margin-right:auto;padding-top:12px;padding-bottom:13px}
+.report-reading-item{padding:18px 2px;grid-template-columns:104px minmax(0,1fr) 20px;column-gap:21px}
+.report-reading-body h2{font-size:19px;margin:5px 0 5px;line-height:1.4}
+.report-reading-judgment{font-size:12px;line-height:1.62}
+.report-reading-checkpoint{margin-top:7px;line-height:1.6;font-size:11px}
+.report-reading-item>svg{margin-top:24px}
+.topic-feature-image-button{background:linear-gradient(135deg,#c4cfc4,#e1e5de)}
+.topic-feature-image{object-position:center;filter:saturate(.82) contrast(.98)}
+.topic-feature-photo-credit{font-size:10px;color:var(--muted-foreground);line-height:1.4;margin:0 0 9px;display:inline-flex;align-self:flex-start;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px}
+.topic-feature-photo-credit:hover{color:var(--primary)}
+.topic-feature-card .topic-feature-copy h3{font-size:17px;line-height:1.4}
+.topic-v21-intro-grid{column-gap:19px}
+@media(max-width:1000px){
+ .report-cover{gap:30px;grid-template-columns:minmax(0,1fr) minmax(0,.9fr)}
+ .report-cover-copy h1{font-size:32px}
+ .report-cover-lead{font-size:14px}
+ .report-cover-photo{min-height:190px}
+}
+@media(max-width:760px){
+ .masthead-inner{min-height:70px}
+ .nav-item{height:48px;font-size:12px}
+ main.container{padding-top:21px}
+ .report-cover{grid-template-columns:1fr;gap:12px}
+ .report-cover-copy h1{margin:10px 0}
+ .report-cover-description{margin-top:5px}
+ .report-cover-foot{margin-top:11px}
+ .report-cover-photo{display:block;min-height:0;aspect-ratio:2.3}
+ .report-cover-photo figcaption{font-size:9px}
+ .report-reading-item{grid-template-columns:minmax(0,1fr) 16px;gap:11px}
+}
+@media(prefers-reduced-motion:reduce){.report-cover-photo img{transition:none}}
