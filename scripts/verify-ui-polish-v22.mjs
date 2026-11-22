@@ -8,6 +8,10 @@ try{
   await page.goto(origin+'/topics',{waitUntil:'domcontentloaded'});
   if(await page.locator('.topic-v21-entry').count()!==3)throw Error('Expected three curated topic cards');
   if(await page.locator('.topic-v21-chip').count()!==0)throw Error('Do not duplicate pinned shortcuts on landing');
+  await page.waitForFunction(()=>{
+    const imgs=[...document.querySelectorAll('.topic-feature-image')];
+    return imgs.length===3 && imgs.every(img=>img.complete && img.naturalWidth>0);
+  },{timeout:15000});
   const illustrations=await page.locator('.topic-feature-image').evaluateAll(images=>images.map(image=>({
     src:image.getAttribute('src'),loaded:image.complete && image.naturalWidth>0,
   })));
