@@ -867,3 +867,8 @@ main.container.soft-enter { animation:none; }
   .report-heading-visual{display:none}
 }
 @media (prefers-reduced-motion:reduce){.topic-feature-image{transition:none}}
+
+/* Specificity correction: the picture button is a media surface, not the older text CTA. */
+.topic-v21-entry.topic-feature-card .topic-feature-image-button{display:block;align-self:stretch;margin:0;padding:0;border:0;line-height:0;border-radius:3px}
+.topic-v21-entry.topic-feature-card .topic-feature-image-button .topic-feature-image-note{line-height:1.4}
+.topic-v21-entry.topic-feature-card .topic-feature-copy>button{margin-top:auto;align-self:flex-start;padding:15px 0 0;line-height:1.5}
