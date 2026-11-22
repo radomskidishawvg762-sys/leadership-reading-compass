@@ -1,0 +1,75 @@
+name: V2.7 local-photo build, quality, preview (no production deploy)
+on:
+  push:
+    branches: [feat/visual-performance-v27-20261122]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout working feature branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          ref: ${{ github.ref_name }}
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install image library
+        run: python -m pip install Pillow==11.3.0
+      - name: Vendor approved original photos to local WebP
+        run: python scripts/vendor_market_photos.py
+      - name: Persist optimized WebP to the feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/market/*-v27.webp
+          if ! git diff --cached --quiet; then
+            git commit -m "assets(v27): vendor verified, compressed local photographs"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.4'
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Complete unit regression
+        run: bun run test
+      - name: Cloudflare production build
+        run: bun run build:cloudflare
+      - name: Wrangler dry-run (never deploy)
+        run: bunx wrangler deploy --dry-run
+      - name: Preview built Worker
+        run: |
+          bunx vite preview --config vite.cloudflare.config.ts --host 127.0.0.1 --port 4173 > /tmp/worker-preview.log 2>&1 &
+          echo $! > /tmp/worker-preview.pid
+      - name: Verify routes and local photographic resources
+        run: |
+          node scripts/verify-worker-pages.mjs
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          expected = {
+            'report-market-v27.webp': (1200,500),
+            'topic-housing-v27.webp': (960,540),
+            'topic-infrastructure-v27.webp': (960,540),
+            'topic-green-building-v27.webp': (960,540),
+          }
+          for name,size in expected.items():
+              file=Path('public/market')/name
+              with Image.open(file) as im:
+                  assert im.format=='WEBP' and im.size==size, (name, im.format, im.size)
+              print(name, file.stat().st_size, 'bytes')
+          PY
+      - name: "Chromium browser: local photos, typography, navigation and fixed AI"
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts playwright-core
+          node scripts/verify-browser-navigation.mjs
+          node scripts/verify-topic-experience.mjs
+          node scripts/verify-ui-polish-v22.mjs
+      - name: Diagnostics on failure
+        if: failure()
+        run: cat /tmp/worker-preview.log || true

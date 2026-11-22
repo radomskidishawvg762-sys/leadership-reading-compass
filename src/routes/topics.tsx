@@ -157,15 +157,10 @@ function Topics(){
             <img className="topic-feature-image" src={getTopicVisual(feature.id)?.src}
               alt={getTopicVisual(feature.id)?.alt ?? '专题行业摄影'}
               width={960} height={540} loading="lazy" decoding="async"
-              referrerPolicy="no-referrer" onError={event=>{event.currentTarget.style.opacity='0';}}/>
+              onError={event=>{event.currentTarget.style.opacity='0';}}/>
             <span className="topic-feature-image-note">行业实景摄影 · 非本期事件现场</span>
           </button>
           <div className="topic-feature-copy">
-            {getTopicVisual(feature.id) && <a className="topic-feature-photo-credit"
-              href={getTopicVisual(feature.id)!.photoPage} target="_blank" rel="noopener noreferrer"
-              aria-label={`查看照片摄影师与来源：${getTopicVisual(feature.id)!.photoCredit}`}>
-              摄影：{getTopicVisual(feature.id)!.photoCredit}
-            </a>}
             <span className="topic-feature-kicker">{getTopicVisual(feature.id)?.tag ?? '专题研判'} · {String(featuredPinned.indexOf(feature)+1).padStart(2, "0")}</span>
             <h3>{feature.title}</h3>
             <p>{feature.description}</p>
@@ -174,6 +169,18 @@ function Topics(){
         </article>)}
       </div>
       <p className="topic-v21-disclaimer"><ShieldCheck size={15}/>分析范围仅限本站已收录、当前允许引用的公开资料，不代表集团内部经营数据。</p>
+      <details className="topic-photo-sources">
+        <summary>图片来源与使用说明</summary>
+        <p>专题图片为行业真实场景摄影，不代表本期事件现场，也不作为研判证据。</p>
+        <div className="topic-photo-source-links">
+          {featuredPinned.map(feature=>{
+            const visual=getTopicVisual(feature.id);
+            return visual?<a key={feature.id} href={visual.photoPage} target="_blank" rel="noopener noreferrer">
+              {feature.title} · {visual.photoCredit}
+            </a>:null;
+          })}
+        </div>
+      </details>
     </section> : <>
       <section className="topic-v21-heading">
         <div><div className="eyebrow">综合研判 · {research.window==='all'?'全部历史':windows.find(item=>item.value===research.window)?.label}</div>

@@ -35,14 +35,13 @@ function Reports() {
         <span className="report-cover-kicker">市场监测 <span aria-hidden="true">/</span> SPECIAL REPORT</span>
         <h1 id="report-cover-title">事件专报</h1>
         <p className="report-cover-lead">聚焦重要市场变化，读懂经营影响与复核重点。</p>
-        <p className="report-cover-description">一事一报，保留原始来源和历史进展。先看判断，再按事项深入阅读。</p>
-        <div className="report-cover-foot"><span>{reports.length} 份已收录专报</span><span>资料可追溯</span></div>
+        <div className="report-cover-foot"><span>{reports.length} 份专报</span><span>来源可查 · 持续跟踪</span></div>
       </div>
       <figure className="report-cover-photo">
-        <img src="https://images.unsplash.com/photo-1527410651988-c2f385ccd3f7?auto=format&fit=crop&w=1280&q=75"
+        <img src="/market/report-market-v27.webp"
           alt="施工现场的混凝土搅拌运输车，真实行业场景摄影"
-          width={1280} height={720} fetchPriority="high" loading="eager" decoding="async"
-          referrerPolicy="no-referrer" onError={event=>{event.currentTarget.style.opacity='0';}} />
+          width={1200} height={500} fetchPriority="high" loading="eager" decoding="async"
+          onError={event=>{event.currentTarget.style.opacity='0';}} />
         <figcaption>行业实景 · 非本期事件现场 · <a href="https://unsplash.com/photos/green-and-white-mixer-truck-at-the-construction-site-PF1daJne7lA" target="_blank" rel="noopener noreferrer">CHUTTERSNAP / Unsplash</a></figcaption>
       </figure>
     </section>
