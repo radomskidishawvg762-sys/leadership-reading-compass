@@ -42,8 +42,8 @@ function Reports() {
         <img src="https://images.unsplash.com/photo-1527410651988-c2f385ccd3f7?auto=format&fit=crop&w=1280&q=75"
           alt="施工现场的混凝土搅拌运输车，真实行业场景摄影"
           width={1280} height={720} fetchPriority="high" loading="eager" decoding="async"
-          referrerPolicy="no-referrer" />
-        <figcaption>真实场景摄影 · 非本期事件实拍</figcaption>
+          referrerPolicy="no-referrer" onError={event=>{event.currentTarget.style.opacity='0';}} />
+        <figcaption>行业实景 · 非本期事件现场 · <a href="https://unsplash.com/photos/green-and-white-mixer-truck-at-the-construction-site-PF1daJne7lA" target="_blank" rel="noopener noreferrer">CHUTTERSNAP / Unsplash</a></figcaption>
       </figure>
     </section>
     <div className="filters">
