@@ -77,7 +77,7 @@ function Monthly() {
           ))}
         </dl>
       </section>}
-      <div className="monthly-foot"><span>每期简报按当期截止日查阅</span><span>内部经营关联使用样例数据</span></div>
+      <div className="monthly-foot"><span>每期简报按当期截止日查阅</span><span>经营关联区分公开披露与业务样例</span></div>
     </article>
   </div>;
 }

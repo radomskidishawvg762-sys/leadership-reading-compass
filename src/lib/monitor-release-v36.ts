@@ -30,7 +30,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "资金": {
-    "text": "房企到位资金降幅继续扩大。公司半年报显示，应收账款余额较大，且部分应收集中于主要客户。建议关注客户付款安排、应收账款回收进度及新增业务垫资规模。",
+    "text": "房企到位资金降幅继续扩大。公司半年报显示，应收账款账面净额为225.57亿元，前五大客户应收占比39.6%。建议关注客户付款安排、应收账款回收进度及新增业务垫资规模。",
     "sourceIds": [
       "public-housing",
       "public-housing-sep",
@@ -38,7 +38,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "增长": {
-    "text": "基础设施投资整体下降，但航空、水运投资仍然增长。公司已在城市外基础设施领域取得签约业务，建议结合经营区域和项目施工进度，评估新增供货机会。",
+    "text": "基础设施投资整体下降，但航空、水运投资仍然增长。公司已在城市外基础设施领域取得签约业务，建议结合经营区域和项目施工进度，评估相关建设项目的供货机会。",
     "sourceIds": [
       "v32-investment",
       "v35-h1-strategy",
