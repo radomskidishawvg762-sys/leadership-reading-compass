@@ -1,8 +1,13 @@
-import {groupContext,priceCostComparison,regionalComparison} from '@/lib/group-context';
+import {groupContext,groupNotes,henanProjects,priceCostComparison,regionalComparison} from '@/lib/group-context';
 import {EvidenceNote} from './market-visual';
 export function GroupContext({eventId,cutoff}:{eventId:string;cutoff?:string}){
  const refs=groupContext(eventId,cutoff);if(!refs.length)return null;
- return <section className="v34-group"><h4>集团经营关联 <small>2026年半年报</small></h4><div className="v34-group-values">{refs.map(r=><div key={r.label}><strong>{r.value.toLocaleString('zh-CN')}{r.unit}</strong><span>{r.label}</span></div>)}</div><small>公司公开披露 · 经营参照</small><EvidenceNote ids={refs.map(r=>r.sourceId)}/></section>;
+ const periods=[...new Set(refs.map(r=>r.period??'公开披露'))];
+ const projects=eventId==='EV-PUBLIC-001'&&refs.some(r=>r.sourceId==='v35-q3-operations');
+ return <section className="v34-group v35-group"><h4>集团经营关联 <small>公开披露</small></h4>
+ {periods.map(period=><div key={period} className="v35-group-period"><div className="v35-period">{period}</div><div className="v34-group-values">{refs.filter(r=>(r.period??'公开披露')===period).map(r=><div key={r.label}><strong>{r.value.toLocaleString('zh-CN',{maximumFractionDigits:2})}<span className="v35-unit">{r.unit}</span></strong><span>{r.label}</span></div>)}</div></div>)}
+ {projects&&<details className="v35-projects"><summary>查看5项已披露签约项目</summary><table><thead><tr><th>项目</th><th>签约量（万方）</th></tr></thead><tbody>{henanProjects.map(p=><tr key={p.name}><td>{p.name}</td><td>{p.volume.toFixed(2)}</td></tr>)}</tbody></table></details>}
+ <p className="v35-group-note">{groupNotes[eventId]}</p><EvidenceNote ids={refs.map(r=>r.sourceId)}/></section>;
 }
 export function RegionalComparison(){
  const rows=regionalComparison();if(!rows.length)return null;

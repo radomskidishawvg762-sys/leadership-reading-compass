@@ -31,6 +31,10 @@ try {
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
   await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
   await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
+  if(await page.locator('main').getAttribute('data-release')!=='v3.5')throw Error('wrong release marker');
+  await page.getByText('河南营业收入',{exact:true}).first().waitFor();
+  await page.getByText('河南5项披露项目签约量',{exact:true}).first().waitFor();
+  const first=await page.locator('.v30-dynamic').boundingBox();if(!first||first.y>720)throw Error('home header too tall: '+first?.y);
   if(!await page.getByText('AI研判建议',{exact:true}).count())throw Error('published advice missing');
   await page.goto(origin+'/?view=issues',{waitUntil:'domcontentloaded'});
   await page.getByText('AI研判建议',{exact:true}).first().waitFor();

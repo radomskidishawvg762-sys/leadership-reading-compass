@@ -8,7 +8,7 @@ export const observationIds=['regional','regional-level','investment','group-reg
 export function snapshotInput(){
  const candidates=events.filter(e=>e.public&&e.date<=currentCutoff).map(e=>({id:e.id,title:e.title,region:e.region,date:e.date,fact:e.fact,sourceIds:e.sources.filter(id=>{const s=getSource(id);return s?.kind==='外部材料'&&!!s.url&&s.date<=currentCutoff;})})).filter(e=>e.sourceIds.length);
  const indicators=metrics.filter(m=>observationIds.includes(m.id)).map(m=>({id:m.id,name:m.name,unit:m.unit,scope:m.scope,points:eligiblePoints(m,currentCutoff)})).filter(m=>m.points.length>1);
- const ids=[...new Set([...candidates.flatMap(e=>e.sourceIds),...indicators.flatMap(m=>m.points.map(p=>p.sourceId)),'v32-group'])];
+ const ids=[...new Set([...candidates.flatMap(e=>e.sourceIds),...indicators.flatMap(m=>m.points.map(p=>p.sourceId)),'v32-group','v35-h1-finance','v35-q3-operations','v35-h1-strategy'])];
  const sources=ids.flatMap(id=>{const s=getSource(id);return s?.url&&s.kind==='外部材料'&&s.date<=currentCutoff?[{id:s.id,title:s.title,excerpt:s.excerpt.slice(0,450)}]:[];});
  return {candidates,indicators,sources,cutoff:currentCutoff};
 }
