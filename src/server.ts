@@ -4,6 +4,8 @@ import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { handleAiChatRequest } from "./lib/ai-chat.server";
 import { handleTopicChatRequest } from "./lib/topic-chat.server";
+import {handleMarketSnapshot,refreshMarketSnapshot,MarketSnapshots} from "./lib/market-snapshot.server";
+export {MarketSnapshots};
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -50,8 +52,10 @@ function isH3SwallowedErrorBody(body: string): boolean {
 // CompressionStream) or set content-encoding here or in a server route: the body gets encoded
 // twice and renders garbled.
 export default {
+  async scheduled(_event:unknown,env:Parameters<typeof refreshMarketSnapshot>[0]) { await refreshMarketSnapshot(env); },
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      if (new URL(request.url).pathname === "/api/market-snapshot") return await handleMarketSnapshot(request,env as Parameters<typeof handleMarketSnapshot>[1]);
       if (new URL(request.url).pathname === "/api/topic-chat") {
         return await handleTopicChatRequest(request, env);
       }

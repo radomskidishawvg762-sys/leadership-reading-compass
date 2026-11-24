@@ -16,5 +16,26 @@
       }
     }
   ],
-  "keep_vars": true
+  "keep_vars": true,
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MARKET_SNAPSHOTS",
+        "class_name": "MarketSnapshots"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "market-snapshot-v1",
+      "new_sqlite_classes": [
+        "MarketSnapshots"
+      ]
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "10 * * * *"
+    ]
+  }
 }

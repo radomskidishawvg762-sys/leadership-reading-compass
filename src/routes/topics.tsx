@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PageHeading, SourceLinks } from '@/components/market/reading';
 import { TopicNarrativeView } from '@/components/market/topic-narrative';
-import { contentHead, formatDate } from '@/lib/market-data';
+import {useMarketSnapshot} from '@/components/market/use-market-snapshot';
+import {events,contentHead, formatDate } from '@/lib/market-data';
 import { featuredTopics } from '@/lib/market-topics';
 import { currentCutoff } from '@/lib/reading-editions';
 import { getTopicResearch, type TopicWindow, type TopicInput } from '@/lib/topic-research';
@@ -52,6 +53,8 @@ function Topics(){
   const featuredPinned=featuredTopics.filter(feature=>pinnedTopicIds.some(id=>id===feature.id));
   const fixedSnapshot=useMemo(()=>getFixedTopicAnswer(topic,research),[topic,research]);
   const key=[topic.q,topic.window,topic.topicId??''].join('|');
+  const canonical=topic.window==='all'?events.find(e=>e.public&&e.title===topic.q):undefined;
+  const shared=useMarketSnapshot();const prior=shared.result?.items.find(i=>i.eventId===canonical?.id);
   const storageKey='v31-topic:'+key;
   function saveResearch(){
     const rows=exchanges.filter(e=>e.status==='ready'&&e.data);if(!rows.length)return;
@@ -69,7 +72,7 @@ function Topics(){
     const previous=reset?[]:history.current.slice(-6);
     if(reset)history.current=[];
     setBusy(true);
-    if(reset)setExchanges([]);
+    // Keep the published analysis visible while an explicit refresh runs.
     setExchanges(rows=>[...rows,{question,status:'loading'}]);
     try{
       const response=await fetch('/api/topic-chat',{
@@ -91,11 +94,9 @@ function Topics(){
       const answer=body.answer;
       history.current=[...previous,{role:'user' as const,content:question},
         {role:'assistant' as const,content:answer}].slice(-8);
-      setExchanges(rows=>{
-        const result=rows.slice();
-        result[result.length-1]={question,status:'ready',data:{answer,sourceIds,eventIds,generatedAt:new Date().toISOString()}};
-        return result;
-      });
+      const completed:Exchange={question,status:'ready',data:{answer,sourceIds,eventIds,generatedAt:new Date().toISOString()}};
+      if(reset){try{const old=JSON.parse(localStorage.getItem(storageKey)??'[]');const versions=[{at:completed.data!.generatedAt!,rows:[completed]},...(Array.isArray(old)?old:[])].slice(0,5);localStorage.setItem(storageKey,JSON.stringify(versions));setSavedVersions(versions);}catch{}}
+      setExchanges(rows=>reset?[completed]:[...rows.slice(0,-1),completed]);
     }catch(error){
       if(controller.signal.aborted)return;
       const message=error instanceof Error?error.message:'专题分析失败。';
@@ -107,7 +108,7 @@ function Topics(){
     }finally{
       if(!controller.signal.aborted)setBusy(false);
     }
-  },[topic,research.events,research.sources]);
+  },[topic,research.events,research.sources,storageKey]);
 
   useEffect(()=>{
     pending.current?.abort();
@@ -126,12 +127,12 @@ function Topics(){
         answer:frozen.answer,sourceIds:frozen.sourceIds,eventIds:frozen.eventIds,
       }}]);
     }else if(topic.q&&research.events.length&&research.sources.length){
-      if(!isPinnedSnapshotRequest(topic)){
+      if(!isPinnedSnapshotRequest(topic)&&!canonical){
         void ask('请基于当前专题所有关联事件与公开来源，综合判断本议题的主要变化、经营影响与优先行动，并注明证据范围。',true);
       }
     }
     return ()=>pending.current?.abort();
-  },[key,ask,topic.q,research,storageKey]);
+  },[key,ask,topic.q,research,storageKey,canonical]);
 
   function runSearch(event:React.FormEvent){
     event.preventDefault();
@@ -227,7 +228,7 @@ function Topics(){
         <div className="topic-v21-layout">
           <div className="topic-v21-main">
             <section className="topic-v21-analysis" aria-label="专题研判摘要">
-              <div className="v31-topic-tools"><h3><BookOpen size={17}/>专题研判</h3><Button size="sm" variant="outline" disabled={busy} onClick={()=>void ask('请重新核对当前专题证据，在保持历史判断可追溯的前提下，形成一份完整的最新研判，明确新增变化与仍未验证的判断。',true)}>更新研判</Button><Button size="sm" variant="outline" disabled={busy||!exchanges.some(e=>e.status==='ready')} onClick={saveResearch}>保存本机</Button></div>{savedNotice&&<small role="status">{savedNotice}</small>}{exchanges[0]?.data?.generatedAt&&<p className="topic-fixed-meta">AI研判 · {exchanges[0].data.generatedAt.slice(0,10)}</p>}
+              <div className="v31-topic-tools"><h3><BookOpen size={17}/>专题研判</h3><Button size="sm" variant="outline" disabled={busy} onClick={()=>void ask('请结合当前专题证据，在保持历史判断可追溯的前提下，形成一份完整的最新研判，明确新增变化与仍未验证的判断。',true)}>更新研判</Button><Button size="sm" variant="outline" disabled={busy||!exchanges.some(e=>e.status==='ready')} onClick={saveResearch}>保存本机</Button></div>{savedNotice&&<small role="status">{savedNotice}</small>}{exchanges[0]?.data?.generatedAt&&<p className="topic-fixed-meta">AI研判 · {exchanges[0].data.generatedAt.slice(0,10)}</p>}
               {fixedSnapshot && !exchanges[0]?.data?.generatedAt && <p className="topic-fixed-meta">本期固定研判 · v{fixedSnapshot.version} · 资料截至 {formatDate(fixedSnapshot.cutoff)}{fixedSnapshot.stale?' · 资料可能已更新':''}</p>}
               {isPinnedSnapshotRequest(topic) && !fixedSnapshot && <p className="topic-v21-muted">本期固定研判已与关联资料不匹配，暂不展示旧结论。请调整查询范围或使用自由搜索。</p>}
               {exchanges[0]?.status==='ready'?<>
@@ -239,7 +240,7 @@ function Topics(){
                 <p className="topic-v21-muted">{exchanges[0].error}</p>
                 <p className="topic-v21-muted">下方保留原有事件判断与来源，可以继续核对。</p>
                 <Button variant="outline" size="sm" onClick={()=>void ask('请综合当前关联事件，给出判断、依据和优先建议。',true)}>重试分析</Button>
-              </>:<p className="topic-v21-muted">正在组织跨事件证据，形成综合研判……</p>}
+              </>:canonical?<div className="v33-topic-prior">{prior?<><h4>核心判断</h4><p>{prior.conclusion}</p><h4>AI研判提示</h4><p>{prior.advice}</p><EvidenceNote ids={prior.sourceIds}/><small>已发布摘要 · {shared.result?.generatedAt.slice(0,10)}</small></>:<p>{canonical.judgment}</p>}<p className="topic-v21-muted">{busy?"正在生成深入研判…":"可选择更新研判，查看完整分析。"}</p></div>:<p className="topic-v21-muted">正在组织跨事件证据，形成综合研判……</p>}
             </section>
             <section className="topic-v21-conversation" aria-label="专题级追问">
               <div className="topic-v21-section-title"><h3><MessageSquare size={18}/>继续围绕专题追问</h3>
@@ -259,7 +260,7 @@ function Topics(){
                   maxLength={240} value={draft} onChange={event=>setDraft(event.target.value)}/>
                 <Button type="submit" disabled={!draft.trim()||busy}><Send size={15}/>追问</Button>
               </form>
-              <p className="topic-v21-help">可保存当前专题研判至本机，重新进入同一专题继续研究。</p>
+              <p className="topic-v21-help">完整研判自动保存在本机；追问记录可使用保存本机保留。</p>
             </section>
             {savedVersions.length>0&&<section className="v31-topic-history"><div className="v31-topic-tools"><h3>历史研判</h3><button type="button" onClick={clearResearch}>清除本机记录</button></div>{savedVersions.map((v,i)=><details key={v.at+i}><summary>{v.at.slice(0,10)} · {v.rows.length} 轮研判</summary>{v.rows.map((r,j)=><div key={j}><h4>{j?r.question:"综合研判"}</h4><TopicNarrativeView answer={r.data!.answer} research={research} sourceIds={r.data!.sourceIds} eventIds={r.data!.eventIds}/><EvidenceNote ids={r.data!.sourceIds}/></div>)}</details>)}</section>}
           </div>
