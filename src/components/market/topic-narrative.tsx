@@ -14,15 +14,15 @@ export type TopicNarrative = {
 const SECTION = /^\s*(?:【\s*([^】]{2,12})\s*】|(?:#{1,3}\s+)([^\n]{2,18}))\s*/;
 const HEADINGS: Record<string, string> = {
   '核心判断':'核心判断','判断':'核心判断','主要依据':'主要依据','依据':'主要依据',
-  '建议行动':'建议行动','建议动作':'建议行动','行动建议':'建议行动',
+  '建议行动':'建议行动','建议动作':'建议行动','行动建议':'建议行动','AI研判提示':'AI研判提示','影响分析':'影响分析',
   '关键缺口':'关键缺口','数据缺口':'关键缺口','待核实':'关键缺口',
   '研判结论':'核心判断',
 };
 export function parseTopicNarrative(input: string): TopicNarrative[] {
   const normalized = input.replace(/\r\n?/g,'\n')
-    .replace(/\*\*(?=【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|关键缺口|数据缺口|待核实|研判结论)】)/g,'')
-    .replace(/(【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|关键缺口|数据缺口|待核实|研判结论)】)\*\*/g,'$1')
-    .replace(/([^\n])\s*(【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|关键缺口|数据缺口|待核实|研判结论)】)/g,'$1\n$2')
+    .replace(/\*\*(?=【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|AI研判提示|影响分析|关键缺口|数据缺口|待核实|研判结论)】)/g,'')
+    .replace(/(【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|AI研判提示|影响分析|关键缺口|数据缺口|待核实|研判结论)】)\*\*/g,'$1')
+    .replace(/([^\n])\s*(【(?:核心判断|判断|主要依据|依据|建议行动|建议动作|行动建议|AI研判提示|影响分析|关键缺口|数据缺口|待核实|研判结论)】)/g,'$1\n$2')
     .replace(/([^\n])\s+(?=[1-3][.、]\s*[^\d\s])/g,'$1\n');
   const sections: TopicNarrative[] = [];
   let current:TopicNarrative={heading:'',lines:[]};
@@ -124,7 +124,7 @@ export function TopicNarrativeView({answer,research,sourceIds,eventIds}:{
 }){
   const sections=parseTopicNarrative(answer);
   return <div className="topic-narrative">
-    {sections.map((section,i)=><section className={section.heading?'topic-narrative-section':'topic-narrative-section topic-narrative-section--plain'} key={i}>
+    {sections.map((section,i)=><section className={section.heading==='AI研判提示'?'topic-narrative-section v31-topic-advice':section.heading?'topic-narrative-section':'topic-narrative-section topic-narrative-section--plain'} key={i}>
       {section.heading&&<h4 className="topic-narrative-heading">{section.heading}</h4>}
       <div className="topic-narrative-content">
         {section.lines.map((line,j)=><p key={j}>

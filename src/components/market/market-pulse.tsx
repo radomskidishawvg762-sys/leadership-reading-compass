@@ -11,7 +11,7 @@ import {getPulseEvents,getPulseFocus,type PulseFilter} from '@/lib/market-pulse'
 import {CoreMonitoring,EvidenceNote,MetricGraphic} from './market-visual';
 import {eventMetric} from '@/lib/market-monitor';
 import {parsePulse,pulseQuery,type PulseAnalysis,type PulseItem} from '@/lib/pulse-analysis';
-const watchKey='market-pulse-v28-watch',cacheKey='market-v30-pulse:'+currentCutoff;
+const watchKey='market-pulse-v28-watch',cacheKey='market-v31-pulse:'+currentCutoff;
 function useStars(){
  const [watched,setWatched]=useState<string[]>([]);const [loaded,setLoaded]=useState(false);
  useEffect(()=>{try{const x=JSON.parse(localStorage.getItem(watchKey)??'[]');if(Array.isArray(x))setWatched(x.filter((id:unknown)=>typeof id==='string'));}catch{}setLoaded(true);},[]);
@@ -37,7 +37,7 @@ function usePulse(enabled:boolean,events:MarketEvent[]){
    if(c.signal.aborted)return;setResult(next);try{localStorage.setItem(cacheKey,JSON.stringify(next));}catch{}
   }catch(e){if(!c.signal.aborted)setError(e instanceof Error?e.message:'研判暂不可用');}finally{if(!c.signal.aborted)setBusy(false);}
  }
- useEffect(()=>{if(!enabled||started.current)return;started.current=true;try{const cached=verify(JSON.parse(localStorage.getItem(cacheKey)??'null'));if(cached){setResult(cached);return;}}catch{}void run();return ()=>{abort.current?.abort();started.current=false;};},[enabled]);
+ useEffect(()=>{if(started.current)return;started.current=true;try{const cached=verify(JSON.parse(localStorage.getItem(cacheKey)??'null'));if(cached){setResult(cached);return;}}catch{}if(enabled)void run();return ()=>{abort.current?.abort();started.current=false;};},[enabled]);
  return {result,busy,error,run};
 }
 function IssueRow({event,item,watched,toggle,compact=false}:{event:MarketEvent;item?:PulseItem;watched:boolean;toggle:()=>void;compact?:boolean}){
@@ -48,9 +48,9 @@ function IssueRow({event,item,watched,toggle,compact=false}:{event:MarketEvent;i
  <div className={'v30-issue-body '+(metric&&!compact?'with-graphic':'')}>
  {metric&&!compact&&<div className="v30-issue-chart"><div className="v30-metric-label">{metric.name} · {metric.unit}</div><MetricGraphic metric={metric}/></div>}
  <div><p className="v30-conclusion">{item?.conclusion??event.judgment}</p>
- <div className="v30-advice"><span>{item?<><Sparkles size={15}/> AI建议</>:'资料研判提示'}</span><strong>{item?.advice??event.attention}</strong></div>
+ <div className="v30-advice"><span>{item?<><Sparkles size={15}/> AI研判提示</>:'资料研判提示'}</span><strong>{item?.advice??event.attention}</strong></div>
  <EvidenceNote ids={item?.sourceIds??event.sources}/>
- <Link className="v30-more" to="/events/$eventId" params={{eventId:event.id}} search={{ask:true}}>深入研判 <ArrowRight size={15}/></Link></div></div>
+ {event.public?<Link className="v30-more" to="/topics" search={{q:event.title,window:"all"}}>深入研判 <ArrowRight size={15}/></Link>:<Link className="v30-more" to="/events/$eventId" params={{eventId:event.id}} search={{ask:true}}>查看样例 <ArrowRight size={15}/></Link>}</div></div>
  </article>;
 }
 export function MarketPulse({directory=false}:{directory?:boolean}){
@@ -62,17 +62,17 @@ export function MarketPulse({directory=false}:{directory?:boolean}){
  const focus=getPulseFocus(all.filter(e=>e.public),watched);
  const fallback=focus.filter(e=>!['EV-PUBLIC-001'].includes(e.id)).slice(0,4);
  const selected=ai.result?recommended.flatMap(i=>{const e=all.find(e=>e.id===i.eventId);return e?[e]:[]}):fallback;
- const visible=directory?all.filter(e=>(filter==='all'||(filter==='star'?watched.includes(e.id):filter==='public'?!!e.public:!e.public))&&(!query||[e.title,e.region,e.fact].join(' ').includes(query))).sort((a,b)=>Number(watched.includes(b.id))-Number(watched.includes(a.id))||Number(!!b.public)-Number(!!a.public)||b.date.localeCompare(a.date)):selected;
+ const visible=directory?all.filter(e=>(filter==='all'||(filter==='ai'?recommended.some(i=>i.eventId===e.id):filter==='star'?watched.includes(e.id):filter==='public'?!!e.public:!e.public))&&(!query||[e.title,e.region,e.fact].join(' ').includes(query))).sort((a,b)=>Number(watched.includes(b.id))-Number(watched.includes(a.id))||Number(recommended.some(i=>i.eventId===b.id))-Number(recommended.some(i=>i.eventId===a.id))||Number(!!b.public)-Number(!!a.public)||b.date.localeCompare(a.date)):selected;
  return <div className="v30-page">
- <PageHeading title={directory?'经营研判':'市场态势'} eyebrow={directory?'重点议题与专题研究':'集团市场经营观察'} meta={'收录资料截至 '+formatDate(currentCutoff)}/>
+ <PageHeading title={directory?'专题研判':'市场态势'} eyebrow={directory?'重点议题与持续研究':'集团市场经营观察'} meta={'收录资料截至 '+formatDate(currentCutoff)}/>
  {directory?<><form className="v30-search" action="/topics" method="get"><Input name="q" placeholder="输入经营问题，发起 AI 研判" aria-label="经营研判问题" required maxLength={120}/><input name="window" type="hidden" value="all"/><Button type="submit"><Search size={16}/>发起研判</Button></form>
- <div className="v30-tabs">{[['all','全部议题'],['public','公开市场议题'],['star','星标关注'],['demo','业务样例']].map(([id,label])=><button key={id} className={id===filter?'active':''} onClick={()=>setFilter(id)}>{label}</button>)}<Input value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索议题" aria-label="搜索议题"/></div></>:<>
+ <div className="v30-tabs">{[['all','全部专题'],['ai','AI推荐'],['public','公开市场议题'],['star','星标关注'],['demo','业务样例']].map(([id,label])=><button key={id} className={id===filter?'active':''} onClick={()=>setFilter(id)}>{label}</button>)}<Input value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索议题" aria-label="搜索议题"/></div></>:<>
  <section className="v30-summary"><div className="v30-section-head"><h2><Sparkles size={18}/>当前 AI 综合研判</h2><Button size="sm" variant="outline" disabled={ai.busy} onClick={()=>void ai.run()}>{ai.busy?'正在研判…':ai.result?'重新研判':'生成研判'}</Button></div>
  {ai.result?<><h3>{ai.result.summary}</h3><small>生成于 {ai.result.generatedAt.slice(0,10)} · 基于已收录公开资料</small><EvidenceNote ids={ai.result.sourceIds}/></>:<p>{ai.busy?'正在结合公开证据形成综合研判…':'尚无已验证的 AI 综合研判。下方保留可核实的市场监测及资料判断。'}</p>}
  {ai.error&&<p role="status" className="v30-error">{ai.error}{ai.result?' · 保留上次有效研判':''}</p>}</section>
  <section className="v30-monitor-section"><div className="v30-section-head"><h2>核心市场监测</h2><Link to="/" search={{view:'monitor'}}>全部指标 <ArrowRight size={15}/></Link></div><CoreMonitoring/></section>
  </>}
- <section className="v30-dynamic"><div className="v30-section-head"><h2>{directory?'经营议题':'重点市场变化与经营研判'}</h2>{!directory&&<Link to="/" search={{view:'issues'}}>全部议题 <ArrowRight size={15}/></Link>}</div>
+ <section className="v30-dynamic"><div className="v30-section-head"><h2>{directory?'研究专题':'重点市场变化与经营研判'}</h2>{!directory&&<Link to="/" search={{view:'issues'}}>全部议题 <ArrowRight size={15}/></Link>}</div>
  {visible.map(e=><IssueRow key={e.id} event={e} item={recommended.find(i=>i.eventId===e.id)} watched={watched.includes(e.id)} toggle={()=>toggle(e.id)} compact={directory}/>)}
  {!visible.length&&<p className="v30-empty">当前没有匹配的议题。</p>}</section>
  {!directory&&watched.length>0&&<section><div className="v30-section-head"><h2>我的重点关注</h2></div>{all.filter(e=>watched.includes(e.id)).map(e=><Link className="v30-saved" key={e.id} to="/events/$eventId" params={{eventId:e.id}} search={{}}><Star size={15} fill="currentColor"/>{e.title}<ArrowRight size={14}/></Link>)}</section>}

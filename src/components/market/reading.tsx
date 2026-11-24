@@ -34,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <nav className="main-nav" aria-label="主导航"><div className="container nav-inner">
       <a href="/" className={`nav-item ${pathname === '/' && !view && !archivedWeek ? 'active' : ''}`}><Newspaper />市场态势</a>
       <a href="/?view=monitor" className={`nav-item ${pathname === '/' && view === 'monitor' ? 'active' : ''}`}><Search />市场监测</a>
-      <a href="/?view=issues" className={`nav-item ${(pathname === '/' && view === 'issues') || pathname.startsWith('/events') || pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><BookOpen />经营研判</a>
+      <a href="/?view=issues" className={`nav-item ${(pathname === '/' && view === 'issues') || pathname.startsWith('/events') || pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><BookOpen />专题研判</a>
       <a href="/?view=briefs" className={`nav-item ${(pathname === '/' && (view === 'briefs' || archivedWeek)) || pathname === '/monthly' || pathname === '/reports' ? 'active' : ''}`}><FileText />经营简报</a>
       <div className="nav-status"><span className="status-dot" />公开资料与业务样例</div>
     </div></nav>
