@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EventKicker } from '@/components/market/reading';
 import { usePublication } from '@/components/market/publication';
@@ -30,6 +30,7 @@ function Reports() {
   );
 
   return <>
+    <div className="brief-return no-print"><Link to="/" search={{view:'briefs'}}><ArrowLeft size={16}/>返回经营简报</Link></div>
     <section className="report-cover" aria-labelledby="report-cover-title">
       <div className="report-cover-copy">
         <span className="report-cover-kicker">市场监测 <span aria-hidden="true">/</span> SPECIAL REPORT</span>

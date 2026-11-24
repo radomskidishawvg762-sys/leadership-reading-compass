@@ -27,6 +27,16 @@ try {
     await assertPage(label==='事件专报'?'事件专报':label,url);
     console.log('click',label,Date.now()-start+'ms');
   }
+  if(await page.getByRole('button',{name:'一号位',exact:true}).count())throw Error('role switch still present');
+  if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
+  await page.getByRole('heading',{name:'集团经营影响与建议'}).waitFor();
+  await page.getByText('天府科创园二期取得施工许可，采购时间待核',{exact:true}).first().waitFor();
+  for(const [path,title] of [['/?issue=2026-11-20','本周速览'],['/monthly?month=2026-11','月度简报'],['/reports','事件专报']]){
+    await page.goto(origin+path,{waitUntil:'domcontentloaded'});
+    await assertPage(title,path);
+    await page.getByRole('link',{name:'返回经营简报',exact:true}).click();
+    await assertPage('经营简报','/?view=briefs');
+  }
   if(errors.length)console.log('Browser warnings/errors',errors);
   console.log('Browser navigation verification PASSED');
 }finally {await browser.close();}

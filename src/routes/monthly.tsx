@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Printer } from 'lucide-react';
+import { Printer, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EditorialImage, EventActions, PageHeading } from '@/components/market/reading';
 import { contentHead, formatDate, monthlyIssues } from '@/lib/market-data';
@@ -24,6 +24,7 @@ function Monthly() {
   });
 
   return <div className="brief-frame brief-frame--monthly">
+    <div className="brief-return no-print"><Link to="/" search={{view:'briefs'}}><ArrowLeft size={16}/>返回经营简报</Link></div>
     <PageHeading title="月度简报" eyebrow="市场监测" meta={<span>{formatDate(issue.start)} — {formatDate(issue.end)}</span>}>
       <div className="issue-control no-print">
         <select aria-label="选择月份" className="select-control" value={issue.id} onChange={e=>navigate({search:{month:e.target.value}})}>
