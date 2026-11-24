@@ -62,6 +62,7 @@ function LinkedCitation({kind,index,research,allowedSourceIds,allowedEventIds}:{
 }){
   const source=kind==='source'?research.sources[index]:undefined;
   const event=kind==='event'?research.events[index]:undefined;
+  if(source && allowedSourceIds.includes(source.id)&&source.url&&/^https?:\/\//.test(source.url))return <a className="topic-citation" href={source.url} target="_blank" rel="noopener noreferrer" title={source.title} aria-label={'引用来源：'+source.title}>{index+1}</a>;
   if(source && allowedSourceIds.includes(source.id))return <Link
     className="topic-citation" to="/sources/$sourceId" params={{sourceId:source.id}}
     title={source.title} aria-label={`引用来源：${source.title}`}>{index+1}</Link>;

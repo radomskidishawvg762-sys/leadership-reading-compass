@@ -1,3 +1,4 @@
+import { MarketMonitor, CoreMonitoring, EvidenceNote } from '@/components/market/market-visual';
 import { MarketPulse, BriefArchive } from '@/components/market/market-pulse';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PageHeading, EventActions, EventKicker, LatestReports } from '@/components/market/reading';
@@ -9,9 +10,9 @@ import { eventAt } from '@/lib/reading-editions';
 import { isLeaderMaterial } from '@/lib/report-workflow';
 
 export const Route = createFileRoute('/')({
-  validateSearch: (search: Record<string, unknown>): { issue?: string; view?: 'issues' | 'briefs' } => ({
+  validateSearch: (search: Record<string, unknown>): { issue?: string; view?: 'issues' | 'briefs' | 'monitor' } => ({
     ...(typeof search.issue === 'string' && issues.some(item => item.id === search.issue) ? {issue:search.issue} : {}),
-    ...(search.view === 'issues' || search.view === 'briefs' ? {view:search.view} : {}),
+    ...(search.view === 'issues' || search.view === 'briefs' || search.view === 'monitor' ? {view:search.view} : {}),
   }),
   head: () => contentHead('市场态势','持续关注外部市场变化、经营议题与证据研判。'),
   component: Index,
@@ -21,6 +22,7 @@ function Index() {
   const {issue,view} = Route.useSearch();
   if (issue) return <WeeklyArchive />;
   if (view === 'briefs') return <BriefArchive />;
+  if (view === 'monitor') return <MarketMonitor />;
   return <MarketPulse directory={view === 'issues'} />;
 }
 
@@ -44,6 +46,7 @@ function WeeklyArchive() {
         {issues.map(item=><option key={item.id} value={item.id}>{formatDate(item.end)} · 第{item.number}期</option>)}
       </select><Button variant="outline" onClick={()=>window.print()}><Printer size={16}/>打印简报</Button></div>
     </PageHeading>
+    <section className="v30-report-metrics"><h2>核心市场监测</h2><CoreMonitoring cutoff={issue.end}/></section>
     <div className="weekly-grid">
       <div>
         <section className="weekly-main" aria-label="本期重点变化">
@@ -55,7 +58,7 @@ function WeeklyArchive() {
               <div className="judgment-row"><span className="judgment-label">关键事实</span><span>{event.fact}</span></div>
               <div className="judgment-row"><span className="judgment-label">经营影响</span><span>{event.relation}</span></div>
             </div>
-            <EventActions eventId={event.id} scope={scope} />
+            <EvidenceNote ids={event.sources}/><EventActions eventId={event.id} scope={scope} />
           </article>)}
           {!items.length && <div className="empty-state">这期暂无需要集团关注的新变化。</div>}
         </section>

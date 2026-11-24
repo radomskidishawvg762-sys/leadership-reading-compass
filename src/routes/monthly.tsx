@@ -1,3 +1,5 @@
+import {CoreMonitoring,EvidenceNote,MetricGraphic} from '@/components/market/market-visual';
+import {eventMetric,eligiblePoints} from '@/lib/market-monitor';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Printer, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -37,8 +39,9 @@ function Monthly() {
       <div className="monthly-top"><span>本月市场概览</span><span>截至 {formatDate(issue.end)}</span></div>
       <div className="monthly-lead">
         <div><h2>{issue.title}</h2><p>{issue.summary}</p></div>
-        <EditorialImage kind="month" />
+        
       </div>
+      <section className="v30-report-metrics"><h2>核心市场监测</h2><CoreMonitoring cutoff={issue.end}/></section>
       <nav className="monthly-contents no-print" aria-label="本月市场简报导读">
         {items.map(({eventId,topic}) => <a key={eventId} href={`#monthly-${eventId}`}>{topic}</a>)}
         {!!issue.updates?.length && <a href="#monthly-progress">上期进展</a>}
@@ -51,12 +54,12 @@ function Monthly() {
               <h3><Link to="/events/$eventId" params={{eventId}} search={scope}>{event.title}</Link></h3>
               <span className="sample-label">{event.public ? '公开资料' : '业务样例'}</span>
             </div>
-            <p className="monthly-change">{change}</p>
+            <p className="monthly-change">{change}</p>{eventMetric(event.id)&&eligiblePoints(eventMetric(event.id)!,issue.end).length>=2&&<MetricGraphic metric={eventMetric(event.id)!} cutoff={issue.end}/>}
             <div className="monthly-reading-notes">
               <p><strong>对集团的影响</strong>{implication}</p>
               <p><strong>建议关注</strong>{watch}</p>
             </div>
-            <EventActions eventId={eventId} scope={scope} />
+            <EvidenceNote ids={event.sources}/><EventActions eventId={eventId} scope={scope} />
           </div>
         </section>
       ))}
