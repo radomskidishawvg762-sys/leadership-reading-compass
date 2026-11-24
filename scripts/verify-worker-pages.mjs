@@ -2,7 +2,10 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 const origin = process.env.PREVIEW_ORIGIN ?? 'http://127.0.0.1:4173';
 const cases = [
-  { path: '/', title: '本周速览' },
+  { path: '/', title: '市场态势' },
+  { path: '/?view=issues', title: '重点议题' },
+  { path: '/?view=briefs', title: '经营简报' },
+  { path: '/?issue=2026-11-20', title: '本周速览' },
   { path: '/monthly', title: '月度简报' },
   { path: '/topics', title: '专题研判' },
   { path: '/reports', title: '事件专报' },

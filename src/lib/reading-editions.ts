@@ -1,7 +1,8 @@
-import { getEvent, getSource, issues, monthlyIssues, type MarketEvent } from './market-data';
+import { getEvent, getSource, issues, monthlyIssues, sources, type MarketEvent } from './market-data';
 
 export type ReadingScope = { issue?: string; month?: string };
-export const currentCutoff = issues[0]?.end ?? '';
+// Current reading follows the evidence corpus, not a weekly publication period.
+export const currentCutoff = sources.reduce((latest, source) => source.date > latest ? source.date : latest, '');
 
 export function readScope(search: Record<string, unknown>): ReadingScope {
   if (typeof search['issue'] === 'string') return { issue: search['issue'] };

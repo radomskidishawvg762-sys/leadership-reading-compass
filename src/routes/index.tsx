@@ -1,18 +1,30 @@
+import { MarketPulse, BriefArchive } from '@/components/market/market-pulse';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PageHeading, EventActions, EventKicker, LatestReports, EditorialImage } from '@/components/market/reading';
+import { PageHeading, EventActions, EventKicker, LatestReports } from '@/components/market/reading';
+import { Button } from '@/components/ui/button';
+import { Printer } from 'lucide-react';
 import { usePublication } from '@/components/market/publication';
 import { contentHead, formatDate, getWeeklyItems, issues } from '@/lib/market-data';
 import { eventAt } from '@/lib/reading-editions';
 import { isLeaderMaterial } from '@/lib/report-workflow';
 
 export const Route = createFileRoute('/')({
-  validateSearch: (search: Record<string, unknown>): { issue?: string } =>
-    typeof search['issue'] === 'string' ? { issue: search['issue'] } : {},
-  head: () => contentHead('本周速览','关键市场变化及其对区域订单、利润与回款的影响。'),
+  validateSearch: (search: Record<string, unknown>): { issue?: string; view?: 'issues' | 'briefs' } => ({
+    ...(typeof search.issue === 'string' && issues.some(item => item.id === search.issue) ? {issue:search.issue} : {}),
+    ...(search.view === 'issues' || search.view === 'briefs' ? {view:search.view} : {}),
+  }),
+  head: () => contentHead('市场态势','持续关注外部市场变化、经营议题与证据研判。'),
   component: Index,
 });
 
 function Index() {
+  const {issue,view} = Route.useSearch();
+  if (issue) return <WeeklyArchive />;
+  if (view === 'briefs') return <BriefArchive />;
+  return <MarketPulse directory={view === 'issues'} />;
+}
+
+function WeeklyArchive() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const {stage} = usePublication();
@@ -26,14 +38,11 @@ function Index() {
 
   return <div className="brief-frame brief-frame--weekly">
     <PageHeading title="本周速览" eyebrow="集团经营动态" meta={<><span>{formatDate(issue.start)} — {formatDate(issue.end)}</span><span className="divider" /><span>第 {issue.number} 期</span></>}>
-      <div className="issue-control"><select className="select-control" aria-label="选择周报期次" value={issue.id}
+      <div className="issue-control no-print"><select className="select-control" aria-label="选择周报期次" value={issue.id}
         onChange={event=>navigate({search:{issue:event.target.value}})}>
         {issues.map(item=><option key={item.id} value={item.id}>{formatDate(item.end)} · 第{item.number}期</option>)}
-      </select></div>
+      </select><Button variant="outline" onClick={()=>window.print()}><Printer size={16}/>打印简报</Button></div>
     </PageHeading>
-    {items.length>0 && issue.id===issues[0]?.id && <div className="weekly-hero" aria-label="本周市场观察场景示意">
-      <EditorialImage kind="week" eager />
-    </div>}
     <div className="weekly-grid">
       <div>
         <section className="weekly-main" aria-label="本期重点变化">

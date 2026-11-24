@@ -11,12 +11,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: s => s.location.pathname });
   const search = useRouterState({ select: s => s.location.search });
   const edition = getReadingEdition(search);
+  const view = (search as {view?:string}).view;
+  const archivedWeek = pathname === '/' && Boolean((search as {issue?:string}).issue);
   const [archiveOpen, setArchiveOpen] = useState(false);
   useEffect(() => { setArchiveOpen(false); }, [pathname, search]);
   return <>
     <header className="masthead">
       <div className="container masthead-inner">
-        <Link to="/" className="brand" aria-label="中建西部建设，返回本周速览">
+        <Link to="/" className="brand" aria-label="中建西部建设，返回市场态势">
           <img className="brand-symbol" src="/market/cscec.png" width={44} height={44} alt="中国建筑 CSCEC" />
           <div><div className="brand-name">中建西部建设</div><div className="brand-product">市场业态感知</div></div>
         </Link>
@@ -30,10 +32,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
     </header>
     <nav className="main-nav" aria-label="主导航"><div className="container nav-inner">
-      <a href="/" className={`nav-item ${pathname === '/' ? 'active' : ''}`}><Newspaper />本周速览</a>
-      <a href="/monthly" className={`nav-item ${pathname === '/monthly' ? 'active' : ''}`}><FileText />月度简报</a>
-      <a href="/reports" className={`nav-item ${pathname === '/reports' || pathname.startsWith('/events') ? 'active' : ''}`}><BookOpen />事件专报</a>
+      <a href="/" className={`nav-item ${pathname === '/' && !view && !archivedWeek ? 'active' : ''}`}><Newspaper />市场态势</a>
+      <a href="/?view=issues" className={`nav-item ${(pathname === '/' && view === 'issues') || pathname.startsWith('/events') ? 'active' : ''}`}><BookOpen />重点议题</a>
       <a href="/topics" className={`nav-item ${pathname === '/topics' || pathname.startsWith('/objects') ? 'active' : ''}`}><Search />专题研判</a>
+      <a href="/?view=briefs" className={`nav-item ${(pathname === '/' && (view === 'briefs' || archivedWeek)) || pathname === '/monthly' || pathname === '/reports' ? 'active' : ''}`}><FileText />经营简报</a>
       <div className="nav-status"><span className="status-dot" />公开资料与业务样例</div>
     </div></nav>
     <main className="container soft-enter">{children}</main>
