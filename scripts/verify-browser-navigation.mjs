@@ -36,8 +36,16 @@ try {
   await page.goto(origin+'/?view=monitor',{waitUntil:'domcontentloaded'});
   await page.getByRole('button',{name:'价格',exact:true}).click();
   await page.getByText('重点城市C30市场报价',{exact:true}).waitFor();
+  await page.locator('.v32-bar-row[data-region="重庆"]').first().waitFor();
+  if(await page.locator('.v32-zero-dot').count()!==3)throw Error('zero changes missing');
+  await page.getByRole('button',{name:'正常模式 切换'}).click();
+  if(await page.locator('html').getAttribute('data-reading-mode')!=='eye')throw Error('eye mode not applied');
+  await page.getByRole('button',{name:'护眼模式 切换'}).click();
   await page.getByRole('button',{name:'成本',exact:true}).click();
   await page.getByText('全国砂石综合均价',{exact:true}).waitFor();
+  await page.getByText('S95矿渣粉样本均价',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'增长',exact:true}).click();
+  if(await page.locator('.v32-bar-row').count()!==8)throw Error('investment categories missing');
   await page.getByRole('button',{name:'竞争',exact:true}).click();
   await page.getByText('公开披露商混销量对比',{exact:true}).waitFor();
   for(const [path,title] of [['/?issue=2026-11-20','本周速览'],['/monthly?month=2026-11','月度简报'],['/reports','事件专报']]){

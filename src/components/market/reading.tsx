@@ -14,6 +14,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const view = (search as {view?:string}).view;
   const archivedWeek = pathname === '/' && Boolean((search as {issue?:string}).issue);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [eye,setEye]=useState(false);
+  useEffect(()=>{try{const e=localStorage.getItem('market-reading-mode')==='eye';setEye(e);document.documentElement.dataset.readingMode=e?'eye':'normal';}catch{}},[]);
+  function toggleMode(){const next=!eye;setEye(next);document.documentElement.dataset.readingMode=next?'eye':'normal';try{localStorage.setItem('market-reading-mode',next?'eye':'normal')}catch{}}
   useEffect(() => { setArchiveOpen(false); }, [pathname, search]);
   return <>
     <header className="masthead">
@@ -22,7 +25,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <img className="brand-symbol" src="/market/cscec.png" width={44} height={44} alt="中国建筑 CSCEC" />
           <div><div className="brand-name">中建西部建设</div><div className="brand-product">市场业态感知</div></div>
         </Link>
-        <div className="header-meta">
+        <div className="header-meta"><button type="button" className="v32-mode" aria-pressed={eye} onClick={toggleMode}>{eye?"护眼模式":"正常模式"} <span>切换</span></button>
           <div className="header-date"><span>材料日期</span><strong>{formatDate(edition?.cutoff ?? currentCutoff)}</strong></div>
           <div className="archive">
             <Button variant="ghost" size="sm" aria-expanded={archiveOpen} onClick={() => setArchiveOpen(!archiveOpen)}><History />往期材料<ChevronDown /></Button>

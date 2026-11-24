@@ -78,7 +78,7 @@ function EventDetail() {
     <section className="detail-section" id="decision">
       <h2 className="section-title">经营影响与建议</h2>
       <p className="section-body">{event.impact}</p>
-      {eventMetric(event.id)&&eligiblePoints(eventMetric(event.id)!,edition.cutoff).length>=2&&<MetricGraphic metric={eventMetric(event.id)!} cutoff={edition.cutoff}/>}<div className="v30-advice"><span>资料研判提示</span><strong>{event.attention}</strong></div><EvidenceNote ids={event.sources}/>
+      {eventMetric(event.id)&&eligiblePoints(eventMetric(event.id)!,edition.cutoff).length>=2&&<MetricGraphic metric={eventMetric(event.id)!} cutoff={edition.cutoff}/>}{event.public&&<div className="v30-advice"><span>AI研判提示</span><Link to="/topics" search={{q:event.title,window:"all"}}>进入专题，查看AI分析</Link></div>}<EvidenceNote ids={event.sources}/>
       <ObjectLinks ids={event.objects} scope={scope} />
     </section>
     <section className="detail-section" id="evidence">

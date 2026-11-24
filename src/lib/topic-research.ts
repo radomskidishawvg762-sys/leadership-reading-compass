@@ -105,8 +105,12 @@ export function getTopicResearch(input: TopicInput, options: { includeDemo?: boo
     sourceMap.set(id,{id,eventIds:[event.id],title:source.title,organization:source.organization,
       date:source.date,excerpt:source.excerpt,context:source.context,url:source.url});
   }
+  if(input.window==='all'&&!feature&&relevantThemes.length){
+    const group=getSource('v32-group');
+    if(group?.url&&group.date<=currentCutoff)sourceMap.set(group.id,{id:group.id,eventIds:[],title:group.title,organization:group.organization,date:group.date,excerpt:group.excerpt,context:group.context,url:group.url});
+  }
   return {topicId:feature?.id,query:input.q,window:input.window,cutoff:currentCutoff,
-    ...(from?{from}:{}),events:eventRows,sources:[...sourceMap.values()].slice(0,12),
+    ...(from?{from}:{}),events:eventRows,sources:[...sourceMap.values()].slice(0,16),
     publicCount:eventRows.filter(item=>item.public).length,
     demoCount:eventRows.filter(item=>!item.public).length};
 }
