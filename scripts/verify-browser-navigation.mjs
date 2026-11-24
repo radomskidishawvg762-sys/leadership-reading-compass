@@ -20,7 +20,7 @@ try {
   await assertPage('市场态势','/');
   await page.waitForTimeout(1200);
   const nav=page.locator('nav.main-nav');
-  for(const [label,url] of [['市场监测','/?view=monitor'],['经营研判','/?view=issues'],['经营简报','/?view=briefs'],['市场态势','/']]){
+  for(const [label,url] of [['市场监测','/?view=monitor'],['专题研判','/?view=issues'],['经营简报','/?view=briefs'],['市场态势','/']]){
     const start=Date.now();
     await nav.getByRole('link',{name:label}).click();
     await page.waitForURL(origin+url,{timeout:20000});
@@ -34,6 +34,8 @@ try {
   await page.locator('.v30-evidence summary').first().click();
   if(!await page.locator('.v30-evidence[open] a[target=_blank]').count())throw Error('Missing original evidence link');
   await page.goto(origin+'/?view=monitor',{waitUntil:'domcontentloaded'});
+  await page.getByRole('button',{name:'价格',exact:true}).click();
+  await page.getByText('重点城市C30市场报价',{exact:true}).waitFor();
   await page.getByRole('button',{name:'成本',exact:true}).click();
   await page.getByText('全国砂石综合均价',{exact:true}).waitFor();
   await page.getByRole('button',{name:'竞争',exact:true}).click();

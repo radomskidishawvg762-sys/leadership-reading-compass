@@ -7,9 +7,12 @@ describe('V3.0 monitoring contracts',()=>{
   for(const id of coreIds)expect(metricById(id)?.scope).toContain('全国');
  });
  it('uses comparison for two observations, no fake lines or zero filling',()=>{
-  const m=metricById('c30')!;expect(chartKind(m,eligiblePoints(m))).toBe('compare');
+  const m=metricById('c30')!;expect(chartKind(m,eligiblePoints(m))).toBe('trend');
+  expect(chartKind(m,eligiblePoints(m).slice(-2))).toBe('compare');
   expect(chartKind(m,[])).toBe('number');
-  expect(eligiblePoints(m,'2026-10-31')).toEqual([]);
+  expect(eligiblePoints(m,'2026-10-31')).toHaveLength(1);
+  for(const id of coreIds)expect(eligiblePoints(metricById(id)! ).length).toBeGreaterThanOrEqual(4);
+  expect(eligiblePoints(metricById('regional-level')!)).toHaveLength(8);
  });
  it('requires an actual event and matching cited source for AI advice',()=>{
   const events=[{id:'e',sourceIds:['s']}];

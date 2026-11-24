@@ -6,7 +6,7 @@ export function parsePulse(value:unknown,events:{id:string;sourceIds:string[]}[]
  const v=value as Record<string,unknown>;
  const str=(x:unknown,n:number):x is string=>typeof x==='string'&&x.trim().length>0&&x.length<=n;
  const ids=(x:unknown):string[]=>Array.isArray(x)?[...new Set(x.filter((i):i is string=>typeof i==='string'&&allowed.includes(i)))]:[];
- if(!str(v.summary,500)||!Array.isArray(v.items))return null;
+ if(!str(v.summary,120)||!Array.isArray(v.items))return null;
  const sourceIds=ids(v.sourceIds); if(!sourceIds.length)return null;
  const items:PulseItem[]=[];
  for(const row of v.items.slice(0,4)){
