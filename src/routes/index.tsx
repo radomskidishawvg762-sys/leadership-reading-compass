@@ -2,7 +2,7 @@ import { MarketPulse, BriefArchive } from '@/components/market/market-pulse';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PageHeading, EventActions, EventKicker, LatestReports } from '@/components/market/reading';
 import { Button } from '@/components/ui/button';
-import { Printer } from 'lucide-react';
+import { Printer, ArrowLeft } from 'lucide-react';
 import { usePublication } from '@/components/market/publication';
 import { contentHead, formatDate, getWeeklyItems, issues } from '@/lib/market-data';
 import { eventAt } from '@/lib/reading-editions';
@@ -37,6 +37,7 @@ function WeeklyArchive() {
   });
 
   return <div className="brief-frame brief-frame--weekly">
+    <div className="brief-return no-print"><Link to="/" search={{view:'briefs'}}><ArrowLeft size={16}/>返回经营简报</Link></div>
     <PageHeading title="本周速览" eyebrow="集团经营动态" meta={<><span>{formatDate(issue.start)} — {formatDate(issue.end)}</span><span className="divider" /><span>第 {issue.number} 期</span></>}>
       <div className="issue-control no-print"><select className="select-control" aria-label="选择周报期次" value={issue.id}
         onChange={event=>navigate({search:{issue:event.target.value}})}>
