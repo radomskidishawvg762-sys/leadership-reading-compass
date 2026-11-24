@@ -47,7 +47,7 @@ export function MarketPulse({directory=false}:{directory?:boolean}){
  const selected=ai.result?focusIds.flatMap(id=>{const e=all.find(e=>e.id===id);return e?[e]:[]}):fallback;
  const visible=directory?all.filter(e=>(filter==='all'||(filter==='ai'?focusIds.includes(e.id):filter==='star'?watched.includes(e.id):filter==='public'?!!e.public:!e.public))&&(!query||[e.title,e.region,e.fact].join(' ').includes(query))).sort((a,b)=>Number(watched.includes(b.id))-Number(watched.includes(a.id))||Number(focusIds.includes(b.id))-Number(focusIds.includes(a.id))||Number(!!b.public)-Number(!!a.public)||b.date.localeCompare(a.date)):selected;
  return <div className={"v30-page "+(directory?"v34-directory":"v34-home")}>
- <div className="v35-page-title"><h1>{directory?'专题研判':'市场态势'}</h1><span>资料截至 {formatDate(currentCutoff)}</span></div>
+ <h1 className="v37-sr-only">{directory?'专题研判':'市场态势'}</h1>
  {directory?<><form className="v30-search" action="/topics" method="get"><Input name="q" placeholder="输入经营问题，发起 AI 研判" aria-label="经营研判问题" required maxLength={120}/><input name="window" type="hidden" value="all"/><Button type="submit"><Search size={16}/>发起研判</Button></form>
  <div className="v30-tabs">{[['all','全部专题'],['ai','AI推荐'],['public','公开市场议题'],['star','星标关注'],['demo','业务样例']].map(([id,label])=><button key={id} className={id===filter?'active':''} onClick={()=>setFilter(id)}>{label}</button>)}<Input value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索议题" aria-label="搜索议题"/></div></>:<>
  <section className="v30-summary"><div className="v30-section-head"><h2><Sparkles size={18}/>当前 AI 综合研判</h2><Button size="sm" variant="outline" disabled={ai.busy} onClick={()=>void ai.run(true)}>{ai.busy?'提交中…':'检查更新'}</Button></div>
@@ -63,7 +63,7 @@ export function MarketPulse({directory=false}:{directory?:boolean}){
 }
 export function BriefArchive(){
  const latest=monthlyIssues[0];
- return <div className="v30-page"><PageHeading title="经营简报" eyebrow="经营成果与历史归档" meta="按发布期次阅读 · 保留当期资料"/>
+ return <div className="v30-page"><h1 className="v37-sr-only">经营简报</h1>
  {latest&&<section className="v30-latest-brief"><div className="v30-section-head"><h2>最新月度简报</h2><Link to="/monthly" search={{month:latest.id}}>阅读完整简报 <ArrowRight size={15}/></Link></div><h3>{latest.title}</h3><p>{latest.summary}</p><CoreMonitoring cutoff={latest.end}/></section>}
  <div className="pulse-archive"><section><h2>月度简报</h2>{monthlyIssues.map(issue=><Link key={issue.id} className="pulse-archive-link" to="/monthly" search={{month:issue.id}}><span>{issue.id.replace('-','年')}月</span><span>截至 {formatDate(issue.end)}</span><ArrowRight size={16}/></Link>)}<h2 className="pulse-archive-special">事件专报</h2><Link className="pulse-archive-link" to="/reports"><span>查看已发布专报</span><ArrowRight size={16}/></Link></section><section><h2>历史周度速览</h2>{issues.map(issue=><Link key={issue.id} className="pulse-archive-link" to="/" search={{issue:issue.id}}><span>第 {issue.number} 期</span><span>{formatDate(issue.start)} — {formatDate(issue.end)}</span><ArrowRight size={16}/></Link>)}</section></div></div>;
 }

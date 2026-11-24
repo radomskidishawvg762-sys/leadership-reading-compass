@@ -10,7 +10,7 @@ export const releaseDetails={
   "EV-PUBLIC-006": "福州公布第八批绿色建材名录，涉及预拌混凝土等30类产品、72家企业；鄂州更新产品信息，包含品类、星级与证书状态。地方清单变化有助于识别招采资格要求，但不代表全国统一门槛，也不证明集团取得订单或资格。建议结合具体项目采购文件及产品证书适用范围，持续观察相关政策。"
 } as Record<string,string>;
 export const releaseSnapshot:MarketSnapshot={
-  "summary": "混凝土需求仍然偏弱，部分地区原材料价格上涨，产品售价尚未同步调整。房建业务需关注回款风险，机场及水运建设投资增长带来新的业务机会。",
+  "summary": "混凝土需求仍然偏弱，部分地区原材料价格上涨，产品售价尚未同步调整。房建业务需关注回款风险，机场及水运投资增长，相关建设项目值得关注。",
   "sourceIds": [
     "public-dispatch",
     "public-price",
@@ -22,7 +22,7 @@ export const releaseSnapshot:MarketSnapshot={
     {
       "eventId": "EV-PUBLIC-001",
       "conclusion": "河南水泥价格上涨，郑州混凝土售价维持稳定。若实际采购成本同步上升，固定价格合同的利润空间可能收窄。",
-      "advice": "建议关注河南地区固定价格合同的盈利情况，以及原材料价格上涨对项目利润的影响。",
+      "advice": "建议优先关注河南地区正在履约的固定价格合同，评估采购成本变化对项目利润的影响。",
       "sourceIds": [
         "public-henan",
         "public-winter",
@@ -40,7 +40,7 @@ export const releaseSnapshot:MarketSnapshot={
     },
     {
       "eventId": "EV-PUBLIC-003",
-      "conclusion": "房企到位资金及新开工面积持续下降，新增业务规模和客户回款进度可能受到影响。",
+      "conclusion": "房企到位资金降幅扩大，新开工面积仍低于上年同期，新增业务和回款进度值得关注。",
       "advice": "建议关注新增房建业务的客户付款能力、首款安排及垫资规模，降低回款风险。",
       "sourceIds": [
         "public-housing",
@@ -57,7 +57,7 @@ export const releaseSnapshot:MarketSnapshot={
     },
     {
       "eventId": "EV-PUBLIC-005",
-      "conclusion": "郑州混凝土售价持平，成都价格小幅上涨，各区域的盈利环境有所不同。",
+      "conclusion": "郑州混凝土售价持平，成都价格小幅上涨，各区域市场售价表现不同，实际盈利仍需结合采购成本判断。",
       "advice": "建议结合各地区实际采购价格和销售价格，评估订单利润的变化。",
       "sourceIds": [
         "public-zhengzhou",
@@ -106,8 +106,8 @@ export const releaseSnapshot:MarketSnapshot={
       ]
     }
   ],
-  "generatedAt": "2026-11-24T10:44:53Z",
+  "generatedAt": "2026-11-24T10:58:01Z",
   "cutoff": "2026-11-20",
-  "fingerprint": "release-v36-20261124",
+  "fingerprint": "release-v37-20261124",
   "origin": "release-ai"
 };
