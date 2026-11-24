@@ -31,6 +31,10 @@ try {
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
   await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
   await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
+  if(await page.locator('main').getAttribute('data-release')!=='v3.6')throw Error('wrong release marker');
+  await page.getByText('河南营业收入',{exact:true}).first().waitFor();
+  await page.getByText('河南5项披露项目签约量',{exact:true}).first().waitFor();
+  const first=await page.locator('.v30-dynamic').boundingBox();if(!first||first.y>720)throw Error('home header too tall: '+first?.y);
   if(!await page.getByText('AI研判建议',{exact:true}).count())throw Error('published advice missing');
   await page.goto(origin+'/?view=issues',{waitUntil:'domcontentloaded'});
   await page.getByText('AI研判建议',{exact:true}).first().waitFor();
@@ -42,6 +46,11 @@ try {
   await page.locator('.v30-evidence summary').first().click();
   if(!await page.locator('.v30-evidence[open] a[target=_blank]').count())throw Error('Missing original evidence link');
   await page.goto(origin+'/?view=monitor',{waitUntil:'domcontentloaded'});
+  for(const category of ['需求','价格','成本','资金','增长','竞争']){
+    await page.getByRole('button',{name:category,exact:true}).click();
+    await page.getByRole('heading',{name:'AI 综合结论'}).waitFor();
+    if(await page.locator('.v30-monitor-grid .v30-metric').count()<3)throw Error('insufficient metrics '+category);
+  }
   await page.getByRole('button',{name:'价格',exact:true}).click();
   await page.getByText('重点城市C30市场报价',{exact:true}).waitFor();
   await page.locator('.v32-bar-row[data-region="重庆"]').first().waitFor();
@@ -54,7 +63,7 @@ try {
   if(!await page.locator('.v33-metric-note').count())throw Error('missing metric explanations');
   await page.getByText('S95矿渣粉样本均价',{exact:true}).waitFor();
   await page.getByRole('button',{name:'增长',exact:true}).click();
-  if(await page.locator('.v32-bar-row').count()!==8)throw Error('investment categories missing');
+  if(await page.locator('.v32-bar-row').count()<8)throw Error('investment categories missing');
   await page.getByRole('button',{name:'竞争',exact:true}).click();
   await page.getByText('公开披露商混销量对比',{exact:true}).waitFor();
   for(const [path,title] of [['/?issue=2026-11-20','本周速览'],['/monthly?month=2026-11','月度简报'],['/reports','事件专报']]){

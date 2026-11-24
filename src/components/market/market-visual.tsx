@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {monitorRelease,monitorReleaseDate,monitorCutoff} from '@/lib/monitor-release-v36';
 import {metricNotes,type Observation} from '@/lib/market-snapshot';
 import {RegionalComparison,PriceCostComparison} from './group-context';
 import {useMarketSnapshot} from './use-market-snapshot';
@@ -54,9 +55,10 @@ export function CoreMonitoring({cutoff}:{cutoff?:string}){
 }
 export function MarketMonitor(){
  const snapshot=useMarketSnapshot();const [category,setCategory]=useState<string>('需求');const [period,setPeriod]=useState('all');
- return <div className="v30-monitor"><div className="page-heading"><div><div className="eyebrow">行业行情与经营参照</div><h1>市场监测</h1><div className="heading-meta">公开指标 · 按实际观测期展示</div></div></div>
+ return <div className="v30-monitor v36-monitor"><div className="v35-page-title"><h1>市场监测</h1><span>公开指标 · 资料截至 {monitorCutoff}</span></div>
  <div className="v30-tabs" role="group" aria-label="监测类别">{categories.map(c=><button key={c} className={category===c?'active':''} onClick={()=>{setCategory(c);setPeriod('all')}}>{c}</button>)}</div>
+ <section className="v36-monitor-summary"><div className="v36-summary-title"><h2>AI 综合结论</h2><small>发布于 {monitorReleaseDate} · 资料截至 {monitorCutoff}</small></div><p>{monitorRelease[category].text}</p><EvidenceNote ids={monitorRelease[category].sourceIds}/></section>
  <div className="v30-monitor-controls"><label>观测范围 <select className="select-control" value={period} onChange={e=>setPeriod(e.target.value)}><option value="all">全部已收录</option><option value="latest">最近四期</option></select></label><Link to="/topics" search={{q:({需求:'市场需求与发运量',价格:'混凝土价格',成本:'原料成本',资金:'房建资金',增长:'基建投资',竞争:'市场竞争'} as Record<string,string>)[category],window:'all'}}>基于指标发起研判 <ArrowUpRight size={14}/></Link></div>
- {category==="价格"&&<RegionalComparison/>}{(category==="价格"||category==="成本")&&<PriceCostComparison/>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div>
+ <div className="v30-monitor-grid">{metrics.filter(m=>m.category===category).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div>{category==="价格"&&<RegionalComparison/>}{(category==="价格"||category==="成本")&&<PriceCostComparison/>}
  </div>;
 }

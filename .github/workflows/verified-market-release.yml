@@ -1,0 +1,56 @@
+name: Verified market release
+on:
+  workflow_run:
+    workflows: ["V2.8 market workbench verification"]
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+concurrency:
+  group: market-production-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.head_repository.full_name == github.repository && startsWith(github.event.workflow_run.head_branch, 'release/market-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Merge only verified owner release
+        id: merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          VERIFIED_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr=$(gh api "repos/$REPO/pulls?state=open&base=main" | jq -c --arg sha "$VERIFIED_SHA" --arg branch "$HEAD_BRANCH" --arg repo "$REPO" '[.[] | select(.head.sha==$sha and .head.ref==$branch and .head.repo.full_name==$repo and .base.ref=="main" and .draft==false and .user.login==($repo|split("/")[0]))] | if length==1 then .[0] else empty end')
+          if [[ -z "$pr" ]]; then echo "No matching verified owner release"; exit 0; fi
+          number=$(jq -r .number <<< "$pr")
+          # Never merge a different revision or a branch that has moved.
+          result=$(gh api -X PUT "repos/$REPO/pulls/$number/merge" -f sha="$VERIFIED_SHA" -f merge_method=merge)
+          jq -e '.merged == true' <<< "$result"
+          echo "sha=$(jq -r .sha <<< "$result")" >> "$GITHUB_OUTPUT"
+      - name: Verify production deployment and rendered version
+        if: steps.merge.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=$(gh api "repos/$REPO/contents/src/components/market/reading.tsx?ref=$MERGE_SHA" --jq .content | base64 -d | grep -oE 'data-release="v[0-9]+\.[0-9]+"' | head -1)
+          test -n "$expected"
+          for i in $(seq 1 45); do
+            checks=$(gh api "repos/$REPO/commits/$MERGE_SHA/check-runs")
+            if jq -e '[.check_runs[]|select(.name=="Cloudflare Pages" or (.name|startswith("Workers Builds:")))]| length>=2 and all(.[]; .conclusion=="success")' <<< "$checks" >/dev/null; then
+              html=$(curl -fsSL --max-time 15 "https://leadership-reading-compass.pages.dev/?release_check=$MERGE_SHA" || true)
+              if grep -Fq "$expected" <<< "$html"; then echo "Production verified: $expected"; exit 0; fi
+            fi
+            sleep 12
+          done
+          echo "::error::Production version could not be verified"
+          exit 1

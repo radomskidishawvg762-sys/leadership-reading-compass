@@ -8,7 +8,7 @@ export const observationIds=['regional','regional-level','investment','group-reg
 export function snapshotInput(){
  const candidates=events.filter(e=>e.public&&e.date<=currentCutoff).map(e=>({id:e.id,title:e.title,region:e.region,date:e.date,fact:e.fact,sourceIds:e.sources.filter(id=>{const s=getSource(id);return s?.kind==='外部材料'&&!!s.url&&s.date<=currentCutoff;})})).filter(e=>e.sourceIds.length);
  const indicators=metrics.filter(m=>observationIds.includes(m.id)).map(m=>({id:m.id,name:m.name,unit:m.unit,scope:m.scope,points:eligiblePoints(m,currentCutoff)})).filter(m=>m.points.length>1);
- const ids=[...new Set([...candidates.flatMap(e=>e.sourceIds),...indicators.flatMap(m=>m.points.map(p=>p.sourceId)),'v32-group'])];
+ const ids=[...new Set([...candidates.flatMap(e=>e.sourceIds),...indicators.flatMap(m=>m.points.map(p=>p.sourceId)),'v32-group','v35-h1-finance','v35-q3-operations','v35-h1-strategy'])];
  const sources=ids.flatMap(id=>{const s=getSource(id);return s?.url&&s.kind==='外部材料'&&s.date<=currentCutoff?[{id:s.id,title:s.title,excerpt:s.excerpt.slice(0,450)}]:[];});
  return {candidates,indicators,sources,cutoff:currentCutoff};
 }
@@ -41,4 +41,5 @@ export function acceptPublished(value:unknown):MarketSnapshot|null{
  return {...v,focusIds:v.focusIds.filter(id=>v.items.some(i=>i.eventId===id)),observations:v.observations.filter(o=>typeof o.text==='string'&&validRefs(o.sourceIds))};
 }
 export const metricNotes:Record<string,string>={
+"housing-starts":"新开工面积是观察未来建筑材料需求的参考，不等于当期混凝土销量。","group-volume-yoy":"签约量与销售量分别反映合同取得和产品交付，不属于同一批订单。","regional-cement-level":"展示同规格水泥的公开市场报价，不代表公司实际采购价。","regional-cement-change":"比较当地同规格水泥的周度价格变化。","group-funds":"应收账款为账面净额，货币资金为期末余额，不能直接相减判断资金缺口。","group-receivable-concentration":"其余客户占比按100%减去前五大客户占比计算。","group-strategy-sign":"区域和业务类型是不同统计维度，可能重叠，不作合计。","henan-projects":"签约量为季度披露数据，不代表当前在手合同或未履约量。","peer-growth":"仅展示已披露可比同比数据的两家公司，不代表行业整体。",
  util:'反映样本搅拌站的产能使用情况，可用于观察行业需求强弱。',c30:'全国C30市场均价，反映产品售价环境，不等同于集团实际成交价。',cement:'反映水泥市场行情，可作为原材料成本环境的参考。',funds:'反映房地产开发企业资金到位情况，可用于观察下游资金环境。',dispatch:'反映样本企业实际发运规模，适合与同口径的历史调查比较。',regional:'比较同一统计周的城市报价涨跌，零值表示持平。','regional-level':'比较公开采价城市的市场报价；区域报价差异不能直接推断盈利差异。',sand:'观察全国砂石综合均价变化，具体采购价格受地区和规格影响。',slag:'观察22城S95矿渣粉样本行情，反映辅助胶凝材料价格环境。',investment:'对比各行业累计投资同比，观察需求结构，不等同于订单增量。','group-regions':'公司公开披露的地区收入占比，用于识别经营布局，不是市场占有率。',peers:'选取公开披露企业的年度商混销量对标，不代表完整行业排名。'};
