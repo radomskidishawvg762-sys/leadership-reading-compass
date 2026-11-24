@@ -20,7 +20,7 @@ try {
   await assertPage('市场态势','/');
   await page.waitForTimeout(1200);
   const nav=page.locator('nav.main-nav');
-  for(const [label,url] of [['重点议题','/?view=issues'],['专题研判','/topics'],['经营简报','/?view=briefs'],['市场态势','/']]){
+  for(const [label,url] of [['市场监测','/?view=monitor'],['经营研判','/?view=issues'],['经营简报','/?view=briefs'],['市场态势','/']]){
     const start=Date.now();
     await nav.getByRole('link',{name:label}).click();
     await page.waitForURL(origin+url,{timeout:20000});
@@ -29,8 +29,15 @@ try {
   }
   if(await page.getByRole('button',{name:'一号位',exact:true}).count())throw Error('role switch still present');
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
-  await page.getByRole('heading',{name:'集团经营影响与建议'}).waitFor();
-  await page.getByText('天府科创园二期取得施工许可，采购时间待核',{exact:true}).first().waitFor();
+  await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
+  await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
+  await page.locator('.v30-evidence summary').first().click();
+  if(!await page.locator('.v30-evidence[open] a[target=_blank]').count())throw Error('Missing original evidence link');
+  await page.goto(origin+'/?view=monitor',{waitUntil:'domcontentloaded'});
+  await page.getByRole('button',{name:'成本',exact:true}).click();
+  await page.getByText('全国砂石综合均价',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'竞争',exact:true}).click();
+  await page.getByText('公开披露商混销量对比',{exact:true}).waitFor();
   for(const [path,title] of [['/?issue=2026-11-20','本周速览'],['/monthly?month=2026-11','月度简报'],['/reports','事件专报']]){
     await page.goto(origin+path,{waitUntil:'domcontentloaded'});
     await assertPage(title,path);

@@ -1,3 +1,4 @@
+import {EvidenceNote} from '@/components/market/market-visual';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, BookOpen, FileText, MessageSquare, Search, Send, ShieldCheck } from 'lucide-react';
@@ -77,6 +78,7 @@ function Topics(){
         typeof id==='string'&&research.sources.some(source=>source.id===id));
       const eventIds=body.eventIds.filter((id):id is string=>
         typeof id==='string'&&research.events.some(event=>event.id===id));
+      if(!sourceIds.length)throw Error('本次研判未提供可核实引用。');
       const answer=body.answer;
       history.current=[...previous,{role:'user' as const,content:question},
         {role:'assistant' as const,content:answer}].slice(-8);
@@ -128,7 +130,7 @@ function Topics(){
   }
 
   return <>
-    <PageHeading title="专题研判" eyebrow="市场监测" meta={<span>收录材料截至 {formatDate(currentCutoff)} · 跨事件证据分析</span>}/>
+    <Link className="v30-more" to="/" search={{view:"issues"}}>← 返回经营研判</Link><PageHeading title="专题研判" eyebrow="经营研判" meta={<span>收录材料截至 {formatDate(currentCutoff)} · 跨事件证据分析</span>}/>
     <form className="topic-v21-search" onSubmit={runSearch}>
       <Input aria-label="专题问题或区域" placeholder="输入区域、经营议题或问题，如：河南原料涨价对经营有何影响？"
         maxLength={120} value={input} onChange={event=>setInput(event.target.value)}/>
@@ -219,7 +221,7 @@ function Topics(){
                   sourceIds={exchanges[0].data!.sourceIds} eventIds={exchanges[0].data!.eventIds}/>
                 {!!exchanges[0].data?.sourceIds.length&&
                   <details className="topic-cited-sources"><summary>查看本次研判引用的原始材料</summary>
-                    <SourceLinks ids={exchanges[0].data!.sourceIds}/>
+                    <EvidenceNote ids={exchanges[0].data!.sourceIds}/>
                   </details>}
               </>:exchanges[0]?.status==='error'?<>
                 <p className="topic-v21-muted">{exchanges[0].error}</p>
@@ -236,7 +238,7 @@ function Topics(){
                   <TopicNarrativeView answer={turn.data!.answer} research={research}
                     sourceIds={turn.data!.sourceIds} eventIds={turn.data!.eventIds}/>
                   {!!turn.data?.sourceIds.length&&<details className="topic-cited-sources">
-                    <summary>查看这轮回答的资料依据</summary><SourceLinks ids={turn.data!.sourceIds}/>
+                    <summary>查看这轮回答的资料依据</summary><EvidenceNote ids={turn.data!.sourceIds}/>
                   </details>}
                 </>:<p className="topic-v21-muted">{turn.status==='loading'?'正在基于专题资料分析……':turn.error}</p>}
               </article>)}

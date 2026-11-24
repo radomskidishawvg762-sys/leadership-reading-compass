@@ -1,3 +1,5 @@
+import {EvidenceNote,MetricGraphic} from '@/components/market/market-visual';
+import {eventMetric,eligiblePoints} from '@/lib/market-monitor';
 import { useEffect, useRef } from 'react';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { BackLink, DateMeta, EditorialImage, EventKicker, ObjectLinks, SourceLinks, Timeline } from '@/components/market/reading';
@@ -61,7 +63,7 @@ function EventDetail() {
         <span>{edition.label} · 截至 {formatDate(edition.cutoff)}</span>
         {edition.cutoff<currentCutoff && <Link className="text-action" to="/events/$eventId" params={{eventId:event.id}} search={{}}>看最新进展</Link>}
       </div>
-      <div className="detail-judgment"><span className="detail-judgment-label">研判</span><p>{event.judgment}</p></div>
+      <div className="detail-judgment"><span className="detail-judgment-label">研判</span><p>{event.judgment}</p><EvidenceNote ids={event.sources}/></div>
     </header>
     {event.type==='项目机会' && <EditorialImage kind="project" />}
     <div className="detail-jumps no-print" aria-label="事件内导航">
@@ -76,7 +78,7 @@ function EventDetail() {
     <section className="detail-section" id="decision">
       <h2 className="section-title">经营影响与建议</h2>
       <p className="section-body">{event.impact}</p>
-      <p className="next-decision">{event.attention}</p>
+      {eventMetric(event.id)&&eligiblePoints(eventMetric(event.id)!,edition.cutoff).length>=2&&<MetricGraphic metric={eventMetric(event.id)!} cutoff={edition.cutoff}/>}<div className="v30-advice"><span>资料研判提示</span><strong>{event.attention}</strong></div><EvidenceNote ids={event.sources}/>
       <ObjectLinks ids={event.objects} scope={scope} />
     </section>
     <section className="detail-section" id="evidence">
