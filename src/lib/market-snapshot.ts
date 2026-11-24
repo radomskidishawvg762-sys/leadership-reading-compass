@@ -3,7 +3,7 @@ import {metrics,eligiblePoints} from './market-monitor';
 import {currentCutoff} from './reading-editions';
 import {shortSummary,type PulseItem} from './pulse-analysis';
 export type Observation={metricId:string;text:string;sourceIds:string[]};
-export type MarketSnapshot={summary:string;sourceIds:string[];items:PulseItem[];focusIds:string[];observations:Observation[];generatedAt:string;cutoff:string;fingerprint:string};
+export type MarketSnapshot={summary:string;sourceIds:string[];items:PulseItem[];focusIds:string[];observations:Observation[];generatedAt:string;cutoff:string;fingerprint:string;origin?:'release-ai'|'worker-ai'};
 export const observationIds=['regional','regional-level','investment','group-regions','peers'];
 export function snapshotInput(){
  const candidates=events.filter(e=>e.public&&e.date<=currentCutoff).map(e=>({id:e.id,title:e.title,region:e.region,date:e.date,fact:e.fact,sourceIds:e.sources.filter(id=>{const s=getSource(id);return s?.kind==='外部材料'&&!!s.url&&s.date<=currentCutoff;})})).filter(e=>e.sourceIds.length);
@@ -12,7 +12,7 @@ export function snapshotInput(){
  const sources=ids.flatMap(id=>{const s=getSource(id);return s?.url&&s.kind==='外部材料'&&s.date<=currentCutoff?[{id:s.id,title:s.title,excerpt:s.excerpt.slice(0,450)}]:[];});
  return {candidates,indicators,sources,cutoff:currentCutoff};
 }
-const clean=(x:unknown,max:number)=>typeof x==='string'&&x.trim()&&x.trim().length<=max?x.trim():'';
+const clean=(x:unknown,max:number)=>typeof x==='string'&&x.trim()?x.trim().slice(0,max):'';
 export function validateSnapshot(raw:unknown,input= snapshotInput()):Omit<MarketSnapshot,'generatedAt'|'cutoff'|'fingerprint'>|null{
  if(!raw||typeof raw!=='object')return null;
  const v=raw as Record<string,unknown>;

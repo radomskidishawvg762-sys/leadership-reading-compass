@@ -1,4 +1,7 @@
-import {EvidenceNote} from '@/components/market/market-visual';
+import {releaseDetails,releaseSnapshot} from '@/lib/market-release-v34';
+import {GroupContext} from '@/components/market/group-context';
+import {eventMetric} from '@/lib/market-monitor';
+import {EvidenceNote,MetricGraphic} from '@/components/market/market-visual';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowRight, BookOpen, FileText, MessageSquare, Search, Send, ShieldCheck } from 'lucide-react';
@@ -55,6 +58,7 @@ function Topics(){
   const key=[topic.q,topic.window,topic.topicId??''].join('|');
   const canonical=topic.window==='all'?events.find(e=>e.public&&e.title===topic.q):undefined;
   const shared=useMarketSnapshot();const prior=shared.result?.items.find(i=>i.eventId===canonical?.id);
+  const seed=releaseSnapshot.items.find(i=>i.eventId===canonical?.id);
   const storageKey='v31-topic:'+key;
   function saveResearch(){
     const rows=exchanges.filter(e=>e.status==='ready'&&e.data);if(!rows.length)return;
@@ -127,9 +131,7 @@ function Topics(){
         answer:frozen.answer,sourceIds:frozen.sourceIds,eventIds:frozen.eventIds,
       }}]);
     }else if(topic.q&&research.events.length&&research.sources.length){
-      if(!isPinnedSnapshotRequest(topic)&&!canonical){
-        void ask('请基于当前专题所有关联事件与公开来源，综合判断本议题的主要变化、经营影响与优先行动，并注明证据范围。',true);
-      }
+      // Opening or changing a topic only reads published evidence. Explicit update triggers the model.
     }
     return ()=>pending.current?.abort();
   },[key,ask,topic.q,research,storageKey,canonical]);
@@ -180,7 +182,7 @@ function Topics(){
           <div className="topic-feature-copy">
             <span className="topic-feature-kicker">{getTopicVisual(feature.id)?.tag ?? '专题研判'} · {String(featuredPinned.indexOf(feature)+1).padStart(2, "0")}</span>
             <h3>{feature.title}</h3>
-            <p>{feature.description}</p>
+            <p>{feature.description}</p>{shared.result.items.find(i=>i.eventId===({"housing-cash":"EV-PUBLIC-003","infrastructure":"EV-PUBLIC-004","green-building":"EV-PUBLIC-006"} as Record<string,string>)[feature.id])&&<p className="v34-feature-advice"><strong>AI研判建议</strong> {shared.result.items.find(i=>i.eventId===({"housing-cash":"EV-PUBLIC-003","infrastructure":"EV-PUBLIC-004","green-building":"EV-PUBLIC-006"} as Record<string,string>)[feature.id])?.advice}</p>}
             <button type="button" onClick={()=>openFeatured(feature.id,feature.title)}>阅读本期研判 <ArrowRight size={14}/></button>
           </div>
         </article>)}
@@ -225,7 +227,7 @@ function Topics(){
         <h2>当前范围内没有足够的可引用材料</h2>
         <p>可以改用“全部已收录”时间窗，或换一个更具体的区域、市场关键词。不会凭空生成研判。</p>
       </section> : <>
-        <div className="topic-v21-layout">
+        <div className="topic-v21-layout v34-topic-layout">
           <div className="topic-v21-main">
             <section className="topic-v21-analysis" aria-label="专题研判摘要">
               <div className="v31-topic-tools"><h3><BookOpen size={17}/>专题研判</h3><Button size="sm" variant="outline" disabled={busy} onClick={()=>void ask('请结合当前专题证据，在保持历史判断可追溯的前提下，形成一份完整的最新研判，明确新增变化与仍未验证的判断。',true)}>更新研判</Button><Button size="sm" variant="outline" disabled={busy||!exchanges.some(e=>e.status==='ready')} onClick={saveResearch}>保存本机</Button></div>{savedNotice&&<small role="status">{savedNotice}</small>}{exchanges[0]?.data?.generatedAt&&<p className="topic-fixed-meta">AI研判 · {exchanges[0].data.generatedAt.slice(0,10)}</p>}
@@ -240,12 +242,12 @@ function Topics(){
                 <p className="topic-v21-muted">{exchanges[0].error}</p>
                 <p className="topic-v21-muted">下方保留原有事件判断与来源，可以继续核对。</p>
                 <Button variant="outline" size="sm" onClick={()=>void ask('请综合当前关联事件，给出判断、依据和优先建议。',true)}>重试分析</Button>
-              </>:canonical?<div className="v33-topic-prior">{prior?<><h4>核心判断</h4><p>{prior.conclusion}</p><h4>AI研判提示</h4><p>{prior.advice}</p><EvidenceNote ids={prior.sourceIds}/><small>已发布摘要 · {shared.result?.generatedAt.slice(0,10)}</small></>:<p>{canonical.judgment}</p>}<p className="topic-v21-muted">{busy?"正在生成深入研判…":"可选择更新研判，查看完整分析。"}</p></div>:<p className="topic-v21-muted">正在组织跨事件证据，形成综合研判……</p>}
+              </>:canonical?<div className="v33-topic-prior">{prior?<><h4>核心判断</h4><p>{prior.conclusion}</p><EvidenceNote ids={prior.sourceIds}/><small>已发布判断 · {shared.result.generatedAt.slice(0,10)}</small>{eventMetric(canonical.id)&&<div className="v34-topic-chart"><MetricGraphic metric={eventMetric(canonical.id)!} cutoff={research.cutoff}/></div>}<GroupContext eventId={canonical.id} cutoff={research.cutoff}/>{seed&&<><h4>详细影响分析</h4><p>{releaseDetails[canonical.id]}</p><EvidenceNote ids={seed.sourceIds}/><small>首发AI研究 · {releaseSnapshot.generatedAt.slice(0,10)}</small></>}<h4>AI研判提示</h4><p>{prior.advice}</p><EvidenceNote ids={prior.sourceIds}/></>:<p>{canonical.judgment}</p>}{busy&&<p className="topic-v21-muted">正在更新，保留已发布内容…</p>}</div>:<p className="topic-v21-muted">正在组织跨事件证据，形成综合研判……</p>}
             </section>
             <section className="topic-v21-conversation" aria-label="专题级追问">
               <div className="topic-v21-section-title"><h3><MessageSquare size={18}/>继续围绕专题追问</h3>
                 <span>同一专题的多轮分析</span></div>
-              {exchanges.slice(1).map((turn,index)=><article key={index} className="topic-v21-turn">
+              {exchanges.slice(exchanges[0]?.status==='ready'?1:0).map((turn,index)=><article key={index} className="topic-v21-turn">
                 <h4>{turn.question}</h4>
                 {turn.status==='ready'?<>
                   <TopicNarrativeView answer={turn.data!.answer} research={research}

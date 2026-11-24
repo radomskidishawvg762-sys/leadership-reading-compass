@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {metricNotes,type Observation} from '@/lib/market-snapshot';
+import {RegionalComparison,PriceCostComparison} from './group-context';
 import {useMarketSnapshot} from './use-market-snapshot';
 import {Link} from '@tanstack/react-router';
 import {ArrowUpRight,FileText} from 'lucide-react';
@@ -56,6 +57,6 @@ export function MarketMonitor(){
  return <div className="v30-monitor"><div className="page-heading"><div><div className="eyebrow">行业行情与经营参照</div><h1>市场监测</h1><div className="heading-meta">公开指标 · 按实际观测期展示</div></div></div>
  <div className="v30-tabs" role="group" aria-label="监测类别">{categories.map(c=><button key={c} className={category===c?'active':''} onClick={()=>{setCategory(c);setPeriod('all')}}>{c}</button>)}</div>
  <div className="v30-monitor-controls"><label>观测范围 <select className="select-control" value={period} onChange={e=>setPeriod(e.target.value)}><option value="all">全部已收录</option><option value="latest">最近四期</option></select></label><Link to="/topics" search={{q:({需求:'市场需求与发运量',价格:'混凝土价格',成本:'原料成本',资金:'房建资金',增长:'基建投资',竞争:'市场竞争'} as Record<string,string>)[category],window:'all'}}>基于指标发起研判 <ArrowUpRight size={14}/></Link></div>
- {category==="价格"&&<section className="v32-group-context"><h2>集团经营区域参照</h2><p>2026年半年报：国家重大战略区域签约量占59%，包括京津冀、长三角及粤港澳大湾区等。下列采价城市按所在省份关联公司公开收入占比，不能视作该城市的收入。</p><table className="v31-compare-table"><thead><tr><th>采价城市</th><th>所属经营地区</th><th>公司地区收入占比</th></tr></thead><tbody>{eligiblePoints(metricById("regional-level")!).map(d=><tr key={d.label}><td>{d.label}</td><td>{cityProvince[d.label]}</td><td>{regionalExposure(d.label)?.toFixed(2)}%</td></tr>)}</tbody></table><EvidenceNote ids={["v32-group"]}/></section>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div>
+ {category==="价格"&&<RegionalComparison/>}{(category==="价格"||category==="成本")&&<PriceCostComparison/>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div>
  </div>;
 }

@@ -11,6 +11,7 @@ import {getPulseEvents,getPulseFocus,type PulseFilter} from '@/lib/market-pulse'
 import {CoreMonitoring,EvidenceNote,MetricGraphic} from './market-visual';
 import {eventMetric,eligiblePoints} from '@/lib/market-monitor';
 import type {PulseItem} from '@/lib/pulse-analysis';
+import {GroupContext} from './group-context';
 import {useMarketSnapshot} from './use-market-snapshot';
 const watchKey='market-pulse-v28-watch';
 function useStars(){
@@ -23,10 +24,10 @@ function IssueRow({event,item,watched,toggle,compact=false}:{event:MarketEvent;i
  const metric=eventMetric(event.id);
  return <article className="v30-issue">
  <div className="v30-issue-kicker"><EventKicker event={event}/><span>{formatDate(event.date)}</span><span>{event.public?'公开资料':'业务样例'}</span><button className={'v30-star '+(watched?'active':'')} aria-label={(watched?'取消关注 ':'关注 ')+event.title} aria-pressed={watched} onClick={toggle}><Star size={19} fill={watched?'currentColor':'none'}/></button></div>
- <h3><Link to="/events/$eventId" params={{eventId:event.id}} search={{}}>{metric?.id==='regional'?'重点城市商混价格涨跌分化':event.title}</Link></h3>
+ <h3>{event.public?<Link to="/topics" search={{q:event.title,window:"all"}}>{metric?.id==='regional'?'重点城市商混价格涨跌分化':event.title}</Link>:<Link to="/events/$eventId" params={{eventId:event.id}} search={{}}>{event.title}</Link>}</h3>
  <div className={'v30-issue-body '+(metric&&!compact?'with-graphic':'')}>
  {metric&&!compact&&<div className="v30-issue-chart"><div className="v30-metric-label">{metric.name} · {metric.unit}</div><MetricGraphic metric={metric}/></div>}
- <div><p className="v30-conclusion">{item?.conclusion??event.judgment}</p>
+ <div>{!compact&&event.public&&<GroupContext eventId={event.id}/>}<p className="v30-conclusion">{item?.conclusion??event.judgment}</p>
  {item?<div className="v30-advice"><span><Sparkles size={15}/> AI研判建议</span><strong>{item.advice}</strong></div>:null}
  <EvidenceNote ids={[...(item?.sourceIds??event.sources),...(metric&&!compact?eligiblePoints(metric).map(p=>p.sourceId):[])]}/>
  {event.public?<Link className="v30-more" to="/topics" search={{q:event.title,window:"all"}}>深入研判 <ArrowRight size={15}/></Link>:<Link className="v30-more" to="/events/$eventId" params={{eventId:event.id}} search={{ask:true}}>查看样例 <ArrowRight size={15}/></Link>}</div></div>
@@ -42,12 +43,12 @@ export function MarketPulse({directory=false}:{directory?:boolean}){
  const fallback=focus.filter(e=>!['EV-PUBLIC-001'].includes(e.id)).slice(0,4);
  const selected=ai.result?focusIds.flatMap(id=>{const e=all.find(e=>e.id===id);return e?[e]:[]}):fallback;
  const visible=directory?all.filter(e=>(filter==='all'||(filter==='ai'?focusIds.includes(e.id):filter==='star'?watched.includes(e.id):filter==='public'?!!e.public:!e.public))&&(!query||[e.title,e.region,e.fact].join(' ').includes(query))).sort((a,b)=>Number(watched.includes(b.id))-Number(watched.includes(a.id))||Number(focusIds.includes(b.id))-Number(focusIds.includes(a.id))||Number(!!b.public)-Number(!!a.public)||b.date.localeCompare(a.date)):selected;
- return <div className="v30-page">
+ return <div className={"v30-page "+(directory?"v34-directory":"v34-home")}>
  <PageHeading title={directory?'专题研判':'市场态势'} eyebrow={directory?'重点议题与持续研究':'集团市场经营观察'} meta={'收录资料截至 '+formatDate(currentCutoff)}/>
  {directory?<><form className="v30-search" action="/topics" method="get"><Input name="q" placeholder="输入经营问题，发起 AI 研判" aria-label="经营研判问题" required maxLength={120}/><input name="window" type="hidden" value="all"/><Button type="submit"><Search size={16}/>发起研判</Button></form>
  <div className="v30-tabs">{[['all','全部专题'],['ai','AI推荐'],['public','公开市场议题'],['star','星标关注'],['demo','业务样例']].map(([id,label])=><button key={id} className={id===filter?'active':''} onClick={()=>setFilter(id)}>{label}</button>)}<Input value={query} onChange={e=>setQuery(e.target.value)} placeholder="搜索议题" aria-label="搜索议题"/></div></>:<>
- <section className="v30-summary"><div className="v30-section-head"><h2><Sparkles size={18}/>当前 AI 综合研判</h2><Button size="sm" variant="outline" disabled={ai.busy} onClick={()=>void ai.run(true)}>{ai.busy?'正在更新…':ai.result?'检查更新':'首次生成'}</Button></div>
- {ai.result?<><h3>{ai.result.summary}</h3><small>生成于 {ai.result.generatedAt.slice(0,10)} · 资料截至 {ai.result.cutoff}{ai.checkedAt?' · 最近检查 '+ai.checkedAt.slice(0,10):''}</small><EvidenceNote ids={ai.result.sourceIds}/></>:<p>{ai.busy?'正在结合公开证据形成综合研判…':'首次公开研判尚未发布。市场监测与原始资料仍可阅读。'}</p>}
+ <section className="v30-summary"><div className="v30-section-head"><h2><Sparkles size={18}/>当前 AI 综合研判</h2><Button size="sm" variant="outline" disabled={ai.busy} onClick={()=>void ai.run(true)}>{ai.busy?'提交中…':'检查更新'}</Button></div>
+ {ai.result?<><h3>{ai.result.summary}</h3><small>{ai.result.origin==='release-ai'?'AI发布版 · ':'AI研判 · '}{ai.result.generatedAt.slice(0,10)} · 资料截至 {ai.result.cutoff}{ai.checkedAt?' · 最近检查 '+ai.checkedAt.slice(0,10):''}</small><EvidenceNote ids={ai.result.sourceIds}/></>:<p>{ai.busy?'正在结合公开证据形成综合研判…':'首次公开研判尚未发布。市场监测与原始资料仍可阅读。'}</p>}
  {ai.error&&<p role="status" className="v30-error">{ai.error}{ai.result?' · 保留上次有效研判':''}</p>}</section>
  <section className="v30-monitor-section"><div className="v30-section-head"><h2>核心市场监测</h2><Link to="/" search={{view:'monitor'}}>全部指标 <ArrowRight size={15}/></Link></div><CoreMonitoring/></section>
  </>}
