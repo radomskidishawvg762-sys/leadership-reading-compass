@@ -23,10 +23,10 @@ function NotFoundComponent() {
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">未找到这份材料</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          材料链接可能已失效，请返回本周速览。
+          材料链接可能已失效，请返回市场态势。
         </p>
         <div className="mt-6">
-          <Button asChild><Link to="/">返回本周速览</Link></Button>
+          <Button asChild><Link to="/">返回市场态势</Link></Button>
         </div>
       </div>
     </div>
@@ -47,7 +47,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           这份材料暂时无法打开
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          请重试，或返回本周速览查看其他材料。
+          请重试，或返回市场态势查看其他材料。
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button
@@ -58,7 +58,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           >
             重新打开
           </Button>
-          <Button variant="outline" asChild><Link to="/">返回本周速览</Link></Button>
+          <Button variant="outline" asChild><Link to="/">返回市场态势</Link></Button>
         </div>
       </div>
     </div>

@@ -17,10 +17,10 @@ try {
   const start=Date.now();
   await page.goto(origin+'/',{waitUntil:'domcontentloaded',timeout:30000});
   console.log('initial DOMContentLoaded',Date.now()-start+'ms');
-  await assertPage('本周速览','/');
+  await assertPage('市场态势','/');
   await page.waitForTimeout(1200);
   const nav=page.locator('nav.main-nav');
-  for(const [label,url] of [['月度简报','/monthly'],['专题研判','/topics'],['事件专报','/reports'],['本周速览','/']]){
+  for(const [label,url] of [['重点议题','/?view=issues'],['专题研判','/topics'],['经营简报','/?view=briefs'],['市场态势','/']]){
     const start=Date.now();
     await nav.getByRole('link',{name:label}).click();
     await page.waitForURL(origin+url,{timeout:20000});
