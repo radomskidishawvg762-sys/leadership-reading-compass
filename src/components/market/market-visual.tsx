@@ -1,4 +1,6 @@
 import {useState} from 'react';
+import {metricNotes,type Observation} from '@/lib/market-snapshot';
+import {useMarketSnapshot} from './use-market-snapshot';
 import {Link} from '@tanstack/react-router';
 import {ArrowUpRight,FileText} from 'lucide-react';
 import {Bar,BarChart,CartesianGrid,Cell,Line,LineChart,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts';
@@ -35,7 +37,7 @@ export function MetricGraphic({metric,compact=false,cutoff}:{metric:Metric;compa
  <LineChart data={data.map(p=>({...p,time:Date.parse(p.date)}))} margin={{left:6,right:24,top:12,bottom:8}}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="time" type="number" scale="time" domain={['dataMin','dataMax']} ticks={data.map(p=>Date.parse(p.date))} tickFormatter={(n:number)=>data.find(p=>Date.parse(p.date)===n)?.label??''} interval={0}/><YAxis domain={['auto','auto']} unit={metric.unit==='%'?'%':''}/><Tooltip labelFormatter={(n:number)=>data.find(p=>Date.parse(p.date)===n)?.label??''} formatter={(n:number)=>[n+' '+metric.unit,metric.name]}/><Line dataKey="value" stroke={color} strokeWidth={2.5} dot isAnimationActive={false}/></LineChart>
  </ResponsiveContainer></div>;
 }
-export function MetricPanel({metric,compact=false,cutoff}:{metric:Metric;compact?:boolean;cutoff?:string}){
+export function MetricPanel({metric,compact=false,cutoff,observation}:{metric:Metric;compact?:boolean;cutoff?:string;observation?:Observation}){
  const data=eligiblePoints(metric,cutoff);if(!data.length)return null;
  const last=data.at(-1)!;const showLatest=metric.kind!=='compare';
  return <section className={'v30-metric '+(compact?'v30-metric-small':'')}>
@@ -44,16 +46,16 @@ export function MetricPanel({metric,compact=false,cutoff}:{metric:Metric;compact
  {compact&&<div className="v30-metric-name">{metric.name}</div>}
  {(!showLatest||data.length>1)&&<MetricGraphic metric={metric} compact={compact} cutoff={cutoff}/>}
  <div className="v30-metric-meta">{!cutoff&&metric.change&&<strong>{metric.change} · </strong>}{metric.scope} · {last.date}</div>
- {!compact&&data.length>1&&<details className="v32-data-table"><summary>查看完整数据表</summary><table className="v31-compare-table"><thead><tr><th>观测对象／期间</th><th>{metric.unit}</th></tr></thead><tbody>{data.map(d=><tr key={d.label}><td>{d.label}</td><td>{d.value.toLocaleString('zh-CN')}</td></tr>)}</tbody></table></details>}<EvidenceNote ids={data.map(d=>d.sourceId)}/></section>;
+ {!compact&&<p className="v33-metric-note">{metricNotes[metric.id]}</p>}{!compact&&observation&&observation.sourceIds.every(id=>data.some(p=>p.sourceId===id))&&<div className="v33-observation"><strong>AI观察</strong> {observation.text}<EvidenceNote ids={observation.sourceIds}/></div>}{!compact&&data.length>1&&<details className="v32-data-table"><summary>查看完整数据表</summary><table className="v31-compare-table"><thead><tr><th>观测对象／期间</th><th>{metric.unit}</th></tr></thead><tbody>{data.map(d=><tr key={d.label}><td>{d.label}</td><td>{d.value.toLocaleString('zh-CN')}</td></tr>)}</tbody></table></details>}<EvidenceNote ids={data.map(d=>d.sourceId)}/></section>;
 }
 export function CoreMonitoring({cutoff}:{cutoff?:string}){
  return <div className="v30-core">{coreIds.map(id=><MetricPanel key={id} metric={metricById(id)!} compact cutoff={cutoff}/>)}</div>;
 }
 export function MarketMonitor(){
- const [category,setCategory]=useState<string>('需求');const [period,setPeriod]=useState('all');
+ const snapshot=useMarketSnapshot();const [category,setCategory]=useState<string>('需求');const [period,setPeriod]=useState('all');
  return <div className="v30-monitor"><div className="page-heading"><div><div className="eyebrow">行业行情与经营参照</div><h1>市场监测</h1><div className="heading-meta">公开指标 · 按实际观测期展示</div></div></div>
  <div className="v30-tabs" role="group" aria-label="监测类别">{categories.map(c=><button key={c} className={category===c?'active':''} onClick={()=>{setCategory(c);setPeriod('all')}}>{c}</button>)}</div>
  <div className="v30-monitor-controls"><label>观测范围 <select className="select-control" value={period} onChange={e=>setPeriod(e.target.value)}><option value="all">全部已收录</option><option value="latest">最近四期</option></select></label><Link to="/topics" search={{q:({需求:'市场需求与发运量',价格:'混凝土价格',成本:'原料成本',资金:'房建资金',增长:'基建投资',竞争:'市场竞争'} as Record<string,string>)[category],window:'all'}}>基于指标发起研判 <ArrowUpRight size={14}/></Link></div>
- {category==="价格"&&<section className="v32-group-context"><h2>集团经营区域参照</h2><p>2026年半年报：国家重大战略区域签约量占59%，包括京津冀、长三角及粤港澳大湾区等。下列采价城市按所在省份关联公司公开收入占比，不能视作该城市的收入。</p><table className="v31-compare-table"><thead><tr><th>采价城市</th><th>所属经营地区</th><th>公司地区收入占比</th></tr></thead><tbody>{eligiblePoints(metricById("regional-level")!).map(d=><tr key={d.label}><td>{d.label}</td><td>{cityProvince[d.label]}</td><td>{regionalExposure(d.label)?.toFixed(2)}%</td></tr>)}</tbody></table><EvidenceNote ids={["v32-group"]}/></section>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category).map(m=><MetricPanel key={m.id} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div>
+ {category==="价格"&&<section className="v32-group-context"><h2>集团经营区域参照</h2><p>2026年半年报：国家重大战略区域签约量占59%，包括京津冀、长三角及粤港澳大湾区等。下列采价城市按所在省份关联公司公开收入占比，不能视作该城市的收入。</p><table className="v31-compare-table"><thead><tr><th>采价城市</th><th>所属经营地区</th><th>公司地区收入占比</th></tr></thead><tbody>{eligiblePoints(metricById("regional-level")!).map(d=><tr key={d.label}><td>{d.label}</td><td>{cityProvince[d.label]}</td><td>{regionalExposure(d.label)?.toFixed(2)}%</td></tr>)}</tbody></table><EvidenceNote ids={["v32-group"]}/></section>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div>
  </div>;
 }

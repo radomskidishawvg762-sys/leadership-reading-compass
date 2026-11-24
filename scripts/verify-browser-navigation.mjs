@@ -43,6 +43,7 @@ try {
   await page.getByRole('button',{name:'护眼模式 切换'}).click();
   await page.getByRole('button',{name:'成本',exact:true}).click();
   await page.getByText('全国砂石综合均价',{exact:true}).waitFor();
+  if(!await page.locator('.v33-metric-note').count())throw Error('missing metric explanations');
   await page.getByText('S95矿渣粉样本均价',{exact:true}).waitFor();
   await page.getByRole('button',{name:'增长',exact:true}).click();
   if(await page.locator('.v32-bar-row').count()!==8)throw Error('investment categories missing');
