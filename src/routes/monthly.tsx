@@ -1,3 +1,4 @@
+import {GroupContext} from '@/components/market/group-context';
 import {CoreMonitoring,EvidenceNote,MetricGraphic} from '@/components/market/market-visual';
 import {eventMetric,eligiblePoints} from '@/lib/market-monitor';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -59,7 +60,7 @@ function Monthly() {
               <p><strong>对集团的影响</strong>{implication}</p>
               <p><strong>建议关注</strong>{watch}</p>
             </div>
-            <EvidenceNote ids={event.sources}/><EventActions eventId={eventId} scope={scope} />
+            {event.public&&<GroupContext eventId={event.id} cutoff={issue.end}/>}<EvidenceNote ids={event.sources}/><EventActions eventId={eventId} scope={scope} />
           </div>
         </section>
       ))}

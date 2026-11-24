@@ -31,6 +31,14 @@ try {
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
   await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
   await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
+  if(!await page.getByText('AI研判建议',{exact:true}).count())throw Error('published advice missing');
+  await page.goto(origin+'/?view=issues',{waitUntil:'domcontentloaded'});
+  await page.getByText('AI研判建议',{exact:true}).first().waitFor();
+  let modelRequests=0;const observe=req=>{if(req.url().includes('/api/topic-chat'))modelRequests++};page.on('request',observe);
+  await page.getByRole('link',{name:'深入研判'}).first().click();
+  await page.getByText('详细影响分析',{exact:true}).waitFor();
+  if(modelRequests)throw Error('topic opening called model');page.off('request',observe);
+  await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
   await page.locator('.v30-evidence summary').first().click();
   if(!await page.locator('.v30-evidence[open] a[target=_blank]').count())throw Error('Missing original evidence link');
   await page.goto(origin+'/?view=monitor',{waitUntil:'domcontentloaded'});
