@@ -28,7 +28,7 @@ function IssueRow({event,item,watched,toggle,compact=false}:{event:MarketEvent;i
  const hasChart=!!metric&&!compact;
  return <article className="v30-issue">
  <div className="v30-issue-kicker"><EventKicker event={event}/><span>{formatDate(event.date)}</span><span>{event.public?'公开资料':'业务样例'}</span><button className={'v30-star '+(watched?'active':'')} aria-label={(watched?'取消关注 ':'关注 ')+event.title} aria-pressed={watched} onClick={toggle}><Star size={19} fill={watched?'currentColor':'none'}/></button></div>
- <h3>{event.public?<Link to="/topics" search={{q:event.title,window:"all"}}>{metric?.id==='regional'?'成都、重庆价格上涨，武汉价格下降':event.title}</Link>:<Link to="/events/$eventId" params={{eventId:event.id}} search={{}}>{event.title}</Link>}</h3>
+ <h3>{event.public?<Link to="/topics" search={{q:event.title,window:"all"}}>{metric?.id==='regional'?'成都、重庆商混价格上涨，武汉价格下降':event.title}</Link>:<Link to="/events/$eventId" params={{eventId:event.id}} search={{}}>{event.title}</Link>}</h3>
  <div className={'v30-issue-body '+(hasChart||related?'with-graphic':'')}>
  {(hasChart||related)&&<div className="v35-issue-data">{metric&&hasChart&&<div className="v30-issue-chart"><div className="v30-metric-label">{metric.name} · {metric.unit}</div><MetricGraphic metric={metric}/></div>}{related&&<GroupContext eventId={event.id}/>}</div>}
  <div className="v35-issue-reading"><p className="v30-conclusion">{item?.conclusion??event.judgment}</p>

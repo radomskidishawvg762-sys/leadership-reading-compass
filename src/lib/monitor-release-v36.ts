@@ -1,7 +1,7 @@
 // AI-authored, evidence-based editorial conclusions published with V3.6, not generated on page load.
 export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
   "需求": {
-    "text": "混凝土样本产能利用率与发运量下降，房屋新开工面积仍明显低于上年同期。公司第三季度签约量增长、销售量下降，建议关注订单向实际供货的转化进度，并根据地区需求合理安排生产。",
+    "text": "行业样本发运量和产能利用率下降，房建新开工仍低于上年同期。公司三季度新签量同比增长、销量下降，建议关注各区域在手订单的供货进度及后续产量保障。",
     "sourceIds": [
       "public-dispatch",
       "v30-util-1117",
@@ -10,7 +10,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "价格": {
-    "text": "全国C30市场参考价持平；成都周涨5元/方、重庆周涨20元/方、武汉周降5元/方。建议重点关注四川、重庆、湖北的价格变化；武汉10月工程信息价通知另显示混凝土价格约上涨3元/方，两类数据统计期与口径不同。",
+    "text": "全国C30市场参考价持平，成都、重庆分别周涨5元/方、20元/方，武汉周降5元/方。四川、重庆、湖北的量价变化值得关注。武汉10月工程信息价显示商混价格约上涨3元/方，与11月周度报价口径不同。",
     "sourceIds": [
       "v30-c30-1120",
       "v31-chongqing",
@@ -20,7 +20,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "成本": {
-    "text": "水泥市场价格小幅上涨，砂石和矿渣粉价格近期略有回落。郑州、重庆水泥涨幅较明显，建议关注当地实际采购成本以及固定价格合同的利润变化。",
+    "text": "水泥行情小幅上涨，砂石、矿渣粉略有回落。郑州、重庆水泥分别周涨30元/吨、50元/吨；郑州商混报价持平，建议关注实际原材到货价及固定价格合同的盈利情况。",
     "sourceIds": [
       "public-cement-week",
       "v30-sand",
@@ -30,7 +30,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "资金": {
-    "text": "房企到位资金降幅继续扩大。公司半年报显示，应收账款账面净额为225.57亿元，前五大客户应收占比39.6%。建议关注客户付款安排、应收账款回收进度及新增业务垫资规模。",
+    "text": "房企到位资金降幅扩大。公司半年报披露应收账款账面净额225.57亿元，前五大客户应收占比39.6%。新增房建业务应关注客户资信、付款条件及垫资规模，兼顾业务增量与回款质量。",
     "sourceIds": [
       "public-housing",
       "public-housing-sep",
@@ -38,7 +38,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "增长": {
-    "text": "全国基础设施投资整体下降，航空和水运投资增长。川渝共建重点项目仍在推进；重庆沿江南线高速进入施工阶段，部分产业园主体已封顶。建议结合项目实际采购阶段评估集团供应机会。",
+    "text": "基建投资整体下降，航空、水运投资仍在增长。重庆沿江南线高速已进入施工阶段，川渝部分产业园主体已封顶。建议关注仍有商混采购需求的工程，以及当地厂站的供应条件。",
     "sourceIds": [
       "v32-investment",
       "v35-h1-strategy",
@@ -46,7 +46,7 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "竞争": {
-    "text": "公开披露的商混企业销量规模差异明显，公司2025年销量同比下降。四川、广东等地区收入占比较高，建议重点关注四川、广东等地区的销售价格和竞争动态；市场份额须待可靠行业分母。",
+    "text": "四川、广东是公司收入占比较高的经营地区，公司2025年商混销量同比下降。建议关注两地新增产能、竞争企业报价及重点客户采购动态；暂无可比市场总销量，不判断市占率。",
     "sourceIds": [
       "v30-peer",
       "v30-peer-own",

@@ -42,7 +42,7 @@ export const featuredTopics = [
 const normalize = (value: string) => value.normalize('NFKC').toLowerCase().replace(/[\s，。！？、,.?!]/g, '');
 
 export function findTopicEvents(query: string, events: MarketEvent[]) {
-  const term = normalize(query);
+  const term = normalize(query).replace(/商混/g,'混凝土');
   if (!term) return [];
   const featuredIds = new Set<string>(featuredTopics.flatMap(topic => {
     const constrainedToCity = ['郑州','成都','河南','福州','鄂州','武汉','重庆'].some(city => term.includes(city));
@@ -54,7 +54,7 @@ export function findTopicEvents(query: string, events: MarketEvent[]) {
   const keywords = ['全国','河南','郑州','成都','福州','鄂州','武汉','重庆','房建','绿色建材','基建','水泥','混凝土','招标','信用','应收']
     .filter(keyword => term.includes(keyword));
   return events.filter(event => {
-    const facts = normalize(`${event.region} ${event.title} ${event.type} ${event.fact}`);
+    const facts = normalize(`${event.region} ${event.title} ${event.type} ${event.fact}`).replace(/商混/g,'混凝土');
     return featuredIds.has(event.id) || (keywords.length < 2 && matches.has(event.id)) ||
       (keywords.length > 0 && keywords.every(keyword => facts.includes(keyword)));
   });
