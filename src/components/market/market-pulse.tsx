@@ -46,7 +46,7 @@ export function MarketPulse({directory=false}:{directory?:boolean}){
  {ai.error&&<p role="status" className="v30-error">{ai.error}{ai.result?' · 保留上次有效研判':''}</p>}</section>
  <HomeCore/>
  </>}
- <section className="v30-dynamic"><div className="v30-section-head"><h2>{directory?'研究专题':'重点市场变化与经营研判'}</h2>{!directory&&<Link to="/" search={{view:'issues'}}>全部议题 <ArrowRight size={15}/></Link>}</div>
+ <section className="v30-dynamic">{!directory&&<div className="v30-section-head"><h2>重点市场变化与经营研判</h2><Link to="/" search={{view:'issues'}}>全部议题 <ArrowRight size={15}/></Link></div>}
  {visible.map(e=><IssueRow key={e.id} event={e} item={recommended.find(i=>i.eventId===e.id)} watched={watched.includes(e.id)} toggle={()=>toggle(e.id)} compact={directory}/>)}
  {!visible.length&&<p className="v30-empty">当前没有匹配的议题。</p>}</section>
  {!directory&&watched.length>0&&<section><div className="v30-section-head"><h2>我的重点关注</h2></div>{all.filter(e=>watched.includes(e.id)).map(e=><Link className="v30-saved" key={e.id} to="/events/$eventId" params={{eventId:e.id}} search={{}}><Star size={15} fill="currentColor"/>{e.title}<ArrowRight size={14}/></Link>)}</section>}
@@ -54,7 +54,7 @@ export function MarketPulse({directory=false}:{directory?:boolean}){
 }
 export function BriefArchive(){
  const latest=monthlyIssues[0];
- return <div className="v30-page"><h1 className="v37-sr-only">经营简报</h1>
+ return <div className="v30-page v42-brief-archive"><h1 className="v37-sr-only">经营简报</h1>
  {latest&&<section className="v30-latest-brief"><div className="v30-section-head"><h2>最新月度简报</h2><Link to="/monthly" search={{month:latest.id}}>阅读完整简报 <ArrowRight size={15}/></Link></div><h3>{latest.title}</h3><p>{latest.summary}</p><CoreMonitoring cutoff={latest.end}/></section>}
  <div className="pulse-archive"><section><h2>月度简报</h2>{monthlyIssues.map(issue=><Link key={issue.id} className="pulse-archive-link" to="/monthly" search={{month:issue.id}}><span>{issue.id.replace('-','年')}月</span><span>截至 {formatDate(issue.end)}</span><ArrowRight size={16}/></Link>)}<h2 className="pulse-archive-special">事件专报</h2><Link className="pulse-archive-link" to="/reports"><span>查看已发布专报</span><ArrowRight size={16}/></Link></section><section><h2>历史周度速览</h2>{issues.map(issue=><Link key={issue.id} className="pulse-archive-link" to="/" search={{issue:issue.id}}><span>第 {issue.number} 期</span><span>{formatDate(issue.start)} — {formatDate(issue.end)}</span><ArrowRight size={16}/></Link>)}</section></div></div>;
 }

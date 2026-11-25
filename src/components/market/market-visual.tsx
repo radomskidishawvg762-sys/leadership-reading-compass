@@ -1,3 +1,4 @@
+import {coreChart,reportCoreIds} from '@/lib/executive-home';
 import {useState} from 'react';
 import {ExecutiveMonitor} from './executive-monitor';
 import {PresentationTables} from './monitor-tables';
@@ -48,11 +49,12 @@ export function MetricPanel({metric,compact=false,cutoff,observation}:{metric:Me
  <div className="v30-metric-label">{metric.name}</div>
  {showLatest&&<div className="v30-value">{last.value.toLocaleString('zh-CN')}<small>{metric.unit}</small></div>}
  {compact&&<div className="v30-metric-name">{({'需求':'市场需求','价格':'市场价格','成本':'成本环境','资金':'资金环境'} as Record<string,string>)[metric.category]}</div>}
- {metric.id==='investment'&&<div className="v37-baseline"><span>全国基础设施投资（不含电力等）</span><strong>{data.find(p=>p.label==='基建整体')?.value??'—'}%</strong></div>}{(!showLatest||data.length>1)&&<MetricGraphic metric={metric} compact={compact} cutoff={cutoff}/>}
- <div className="v30-metric-meta">{!cutoff&&metric.change&&<strong>{metric.change} · </strong>}{metric.scope} · {last.date}</div>
+ {metric.id==='investment'&&<div className="v37-baseline"><span>全国基础设施投资（不含电力等）</span><strong>{data.find(p=>p.label==='基建整体')?.value??'—'}%</strong></div>}{(!showLatest||data.length>1)&&<MetricGraphic metric={metric} compact={compact} cutoff={cutoff}/ >}{compact&&metric.id==='dispatch'&&data.length===1&&<SupplyComparison cutoff={cutoff}/>}
+ <div className="v30-metric-meta">{metric.change&&(!cutoff||last.date===eligiblePoints(metric).at(-1)?.date)&&<strong>{metric.change} · </strong>}{metric.scope} · {last.date}</div>
  {!compact&&<p className="v33-metric-note">{metricNotes[metric.id]}</p>}{!compact&&observation&&observation.sourceIds.every(id=>data.some(p=>p.sourceId===id))&&<div className="v33-observation"><strong>AI观察</strong> {observation.text}<EvidenceNote ids={observation.sourceIds}/></div>}{!compact&&data.length>1&&<details className="v32-data-table"><summary>查看完整数据表</summary><table className="v31-compare-table"><thead><tr><th>观测对象／期间</th><th>{metric.unit}</th></tr></thead><tbody>{data.map(d=><tr key={d.label}><td>{d.label}</td><td>{d.value.toLocaleString('zh-CN')}</td></tr>)}</tbody></table></details>}<EvidenceNote ids={data.map(d=>d.sourceId)}/></section>;
 }
+function SupplyComparison({cutoff}:{cutoff?:string}){const rows=coreChart('dispatch',cutoff);if(rows.length!==2||!rows[0].derived)return null;const max=Math.max(...rows.map(r=>r.value))*1.12;return <div className="v42-report-supply"><svg className="v30-mini" viewBox="0 0 220 75" role="img" aria-label={rows.map(r=>r.label+' '+r.value+'万方').join('，')}><path d="M9 53H211" stroke="currentColor" opacity=".2"/>{rows.map((r,i)=>{const h=r.value/max*39,x=63+i*94;return <g key={r.label}><rect x={x-22} y={53-h} width="44" height={h} fill={r.derived?'#91A9AD':'#3979af'}/><text x={x} y={48-h} textAnchor="middle" fontSize="10" fill="currentColor">{r.derived?'约':''}{r.value}</text><text x={x} y="67" textAnchor="middle" fontSize="9" fill="currentColor">{r.derived?'上周（反推）':'本周'}</text></g>})}</svg><small>上周为环比反推约数</small></div>}
 export function CoreMonitoring({cutoff}:{cutoff?:string}){
- return <div className="v30-core">{coreIds.map(id=><MetricPanel key={id} metric={metricById(id)!} compact cutoff={cutoff}/>)}</div>;
+ return <div className="v30-core v42-report-core">{reportCoreIds(cutoff).map(id=><MetricPanel key={id} metric={metricById(id)!} compact cutoff={cutoff}/>)}</div>;
 }
 export function MarketMonitor(){return <ExecutiveMonitor/>;}

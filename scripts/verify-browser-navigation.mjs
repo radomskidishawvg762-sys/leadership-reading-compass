@@ -31,7 +31,7 @@ try {
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
   await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
   await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
-  if(await page.locator('main').getAttribute('data-release')!=='v4.1')throw Error('wrong release marker');
+  if(await page.locator('main').getAttribute('data-release')!=='v4.2')throw Error('wrong release marker');
   await page.getByText('全国C30市场参考价',{exact:true}).first().waitFor();
   await page.getByRole('button',{name:'图表',exact:true}).click();
   if(await page.locator('.v41-core-chart').count()!==4)throw Error('all four charts must render');
@@ -46,6 +46,7 @@ try {
   if(!await page.getByText('AI研判建议',{exact:true}).count())throw Error('published advice missing');
   await page.goto(origin+'/?view=issues',{waitUntil:'domcontentloaded'});
   await page.getByText('AI研判建议',{exact:true}).first().waitFor();
+  if(await page.getByRole('heading',{name:'研究专题',exact:true}).count())throw Error('redundant title');
   let modelRequests=0;const observe=req=>{if(req.url().includes('/api/topic-chat'))modelRequests++};page.on('request',observe);
   await page.getByRole('link',{name:'深入研判'}).first().click();
   await page.getByText('详细影响分析',{exact:true}).waitFor();
@@ -78,6 +79,9 @@ try {
   await page.getByText('公开披露商混销量对比',{exact:true}).waitFor();
   await page.getByRole('heading',{name:'集团主要经营地区收入占比'}).waitFor();
   if(await page.locator('.v40-content').innerText().then(t=>t.includes('单方毛利')))throw Error('unsupported metric displayed');
+  await page.goto(origin+'/?view=briefs',{waitUntil:'domcontentloaded'});
+  await page.getByText('样本企业混凝土供应量',{exact:true}).first().waitFor();
+  if(await page.getByText('混凝土样本产能利用率',{exact:true}).count())throw Error('brief still uses old core');
   for(const [path,title] of [['/?issue=2026-11-20','本周速览'],['/monthly?month=2026-11','月度简报'],['/reports','事件专报']]){
     await page.goto(origin+path,{waitUntil:'domcontentloaded'});
     await assertPage(title,path);
