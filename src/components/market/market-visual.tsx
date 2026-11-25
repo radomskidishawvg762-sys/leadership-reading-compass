@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {InformationPrice,OpportunityContext,RegionChanges} from './opportunity-context';
+import {ExecutiveMonitor} from './executive-monitor';
 import {PresentationTables} from './monitor-tables';
 import {monitorRelease,monitorReleaseDate,monitorCutoff} from '@/lib/monitor-release-v36';
 import {metricNotes,type Observation} from '@/lib/market-snapshot';
@@ -55,12 +55,4 @@ export function MetricPanel({metric,compact=false,cutoff,observation}:{metric:Me
 export function CoreMonitoring({cutoff}:{cutoff?:string}){
  return <div className="v30-core">{coreIds.map(id=><MetricPanel key={id} metric={metricById(id)!} compact cutoff={cutoff}/>)}</div>;
 }
-export function MarketMonitor(){
- const snapshot=useMarketSnapshot();const [category,setCategory]=useState<string>('需求');const [period,setPeriod]=useState('all');
- return <div className="v30-monitor v36-monitor"><div className="v35-page-title"><h1 className="v37-sr-only">市场监测</h1></div>
- <div className="v30-tabs v37-monitor-tabs" role="group" aria-label="监测类别">{categories.map(c=><button key={c} className={category===c?'active':''} onClick={()=>{setCategory(c);setPeriod('all')}} >{categoryLabel(c)}</button>)}</div>
- <section className="v36-monitor-summary"><div className="v36-summary-title"><h2>AI 综合结论</h2><small>发布于 {monitorReleaseDate} · 资料截至 {monitorCutoff} · 全部资料综合判断</small></div><p>{monitorRelease[category].text}</p><EvidenceNote ids={monitorRelease[category].sourceIds}/></section>
- <div className="v30-monitor-controls"><label>趋势图范围 <select className="select-control" value={period} onChange={e=>setPeriod(e.target.value)}><option value="all">全部已收录</option><option value="latest">最近四期</option></select></label><Link to="/topics" search={{q:({需求:'市场需求与发运量',价格:'混凝土价格',成本:'原料成本',资金:'房建资金',增长:'基建投资',竞争:'市场竞争'} as Record<string,string>)[category],window:'all'}}>基于指标发起研判 <ArrowUpRight size={14}/></Link></div>
- {category==="价格"&&<RegionChanges/>}{category==="增长"&&<OpportunityContext/>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category&&!['regional-level','regional-cement-level','regional-cement-change','group-funds','group-receivable-concentration','group-strategy-sign','henan-projects','peer-growth','peers','group-regions'].includes(m.id)).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div><PresentationTables category={category}/>{category==="价格"&&<InformationPrice/>}{(category==="价格"||category==="成本")&&<PriceCostComparison/>}
- </div>;
-}
+export function MarketMonitor(){return <ExecutiveMonitor/>;}
