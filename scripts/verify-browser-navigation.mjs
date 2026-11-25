@@ -31,7 +31,7 @@ try {
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
   await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
   await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
-  if(await page.locator('main').getAttribute('data-release')!=='v3.9')throw Error('wrong release marker');
+  if(await page.locator('main').getAttribute('data-release')!=='v4.0')throw Error('wrong release marker');
   await page.getByText('全国C30市场参考价',{exact:true}).first().waitFor();
   await page.getByRole('heading',{name:'集团经营地区 · 本期价格变化'}).waitFor();
   await page.getByText('河南营业收入',{exact:true}).first().waitFor();
@@ -51,12 +51,13 @@ try {
   for(const category of ['需求','价格','成本','资金','市场机会','竞争']){
     await page.getByRole('button',{name:category,exact:true}).click();
     await page.getByRole('heading',{name:'AI 综合结论'}).waitFor();
-    if(!await page.locator('.v30-monitor-grid .v30-metric, .v37-data-section').count())throw Error('missing metrics '+category);
+    if(!await page.locator('.v40-content .v40-section, .v40-content .v37-data-section').count())throw Error('missing metrics '+category);
   }
   await page.getByRole('button',{name:'价格',exact:true}).click();
   await page.getByText('重点城市C30市场报价与集团经营参照',{exact:true}).waitFor();
-  await page.locator('.v32-bar-row[data-region="重庆"]').first().waitFor();
-  if(await page.locator('.v32-zero-dot').count()!==3)throw Error('zero changes missing');
+  if(await page.locator('.v40-table tbody tr').count()!==8)throw Error('regional price table missing rows');
+  if(await page.locator('.v40-table tbody').getByText('持平',{exact:true}).count()!==3)throw Error('zero changes missing');
+  if(await page.locator('.v38-region-changes').count())throw Error('duplicate price section');
   await page.getByRole('button',{name:'正常模式 切换'}).click();
   if(await page.locator('html').getAttribute('data-reading-mode')!=='eye')throw Error('eye mode not applied');
   await page.getByRole('button',{name:'护眼模式 切换'}).click();
@@ -66,9 +67,11 @@ try {
   await page.getByText('S95矿渣粉样本均价',{exact:true}).waitFor();
   await page.getByRole('button',{name:'市场机会',exact:true}).click();
   await page.getByRole('heading',{name:'重点区域项目线索'}).waitFor();
-  if(await page.locator('.v32-bar-row').count()<7)throw Error('investment categories missing');
+  if(await page.locator('.v32-bar-row').count()!==5)throw Error('investment categories missing');
   await page.getByRole('button',{name:'竞争',exact:true}).click();
   await page.getByText('公开披露商混销量对比',{exact:true}).waitFor();
+  await page.getByRole('heading',{name:'集团主要经营地区收入占比'}).waitFor();
+  if(await page.locator('.v40-content').innerText().then(t=>t.includes('单方毛利')))throw Error('unsupported metric displayed');
   for(const [path,title] of [['/?issue=2026-11-20','本周速览'],['/monthly?month=2026-11','月度简报'],['/reports','事件专报']]){
     await page.goto(origin+path,{waitUntil:'domcontentloaded'});
     await assertPage(title,path);
