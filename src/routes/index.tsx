@@ -8,6 +8,7 @@ import { usePublication } from '@/components/market/publication';
 import { contentHead, formatDate, getWeeklyItems, issues } from '@/lib/market-data';
 import { eventAt } from '@/lib/reading-editions';
 import { isLeaderMaterial } from '@/lib/report-workflow';
+import {plainBusiness} from '@/lib/executive-home';
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { issue?: string; view?: 'issues' | 'briefs' | 'monitor' } => ({
@@ -52,10 +53,10 @@ function WeeklyArchive() {
         <section className="weekly-main" aria-label="本期重点变化">
           {items.map(({event,date},index)=><article className={`story ${index===0?'featured':''}`} id={`story-${event.id}`} key={event.id}>
             <div className="story-kicker"><EventKicker event={event} /><span>{event.public?'公开资料':'业务样例'}</span><span className="story-date">{formatDate(date)}</span></div>
-            <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{event.title}</Link></h2>
-            <p className="story-judgment">{event.judgment}</p>
+            <h2><Link className="story-title-link" to="/events/$eventId" params={{eventId:event.id}} search={scope}>{plainBusiness(event.title)}</Link></h2>
+            <p className="story-judgment">{plainBusiness(event.judgment)}</p>
             <div className="judgment-lines">
-              <div className="judgment-row"><span className="judgment-label">关键事实</span><span>{event.fact}</span></div>
+              <div className="judgment-row"><span className="judgment-label">关键事实</span><span>{plainBusiness(event.fact)}</span></div>
               <div className="judgment-row"><span className="judgment-label">经营影响</span><span>{event.relation}</span></div>
             </div>
             <EvidenceNote ids={event.sources}/><EventActions eventId={event.id} scope={scope} />

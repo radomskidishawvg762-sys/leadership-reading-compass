@@ -1,0 +1,25 @@
+name: Market production AI smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/components/market/reading.tsx'
+      - 'scripts/verify-production-ai.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: market-production-ai-smoke
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify deployed version and actual AI response
+        shell: bash
+        run: |
+          set -euo pipefail
+          export EXPECTED_RELEASE=$(grep -oE 'data-release="v[0-9]+\.[0-9]+"' src/components/market/reading.tsx | head -1 | cut -d'"' -f2)
+          node scripts/verify-production-ai.mjs

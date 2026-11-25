@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { EditorialImage, EventActions, PageHeading } from '@/components/market/reading';
 import { contentHead, formatDate, monthlyIssues } from '@/lib/market-data';
 import { eventAt } from '@/lib/reading-editions';
+import {plainBusiness} from '@/lib/executive-home';
 
 export const Route = createFileRoute('/monthly')({
   validateSearch: (search: Record<string, unknown>): { month?: string } =>
@@ -40,7 +41,7 @@ function Monthly() {
     <article className="monthly-paper">
       <div className="monthly-top"><span>本月市场概览</span><span>截至 {formatDate(issue.end)}</span></div>
       <div className="monthly-lead">
-        <div><h2>{issue.title}</h2><p>{issue.summary}</p></div>
+        <div><h2>{plainBusiness(issue.title)}</h2><p>{plainBusiness(issue.summary)}</p></div>
         
       </div>
       <section className="v30-report-metrics"><h2>核心市场监测</h2><CoreMonitoring cutoff={issue.end}/></section>
@@ -53,10 +54,10 @@ function Monthly() {
           <div className="monthly-topic"><strong>{topic}</strong><span>{event.region}</span></div>
           <div className="monthly-item-body">
             <div className="monthly-item-heading">
-              <h3><Link to="/events/$eventId" params={{eventId}} search={scope}>{event.title}</Link></h3>
+              <h3><Link to="/events/$eventId" params={{eventId}} search={scope}>{plainBusiness(event.title)}</Link></h3>
               <span className="sample-label">{event.public ? '公开资料' : '业务样例'}</span>
             </div>
-            <p className="monthly-change">{change}</p>{eventMetric(event.id)&&eligiblePoints(eventMetric(event.id)!,issue.end).length>=2&&<MetricGraphic metric={eventMetric(event.id)!} cutoff={issue.end}/>}
+            <p className="monthly-change">{plainBusiness(change)}</p>{eventMetric(event.id)&&eligiblePoints(eventMetric(event.id)!,issue.end).length>=2&&<MetricGraphic metric={eventMetric(event.id)!} cutoff={issue.end}/>}
             <div className="monthly-reading-notes">
               <p><strong>对集团的影响</strong>{implication}</p>
               <p><strong>建议关注</strong>{watch}</p>

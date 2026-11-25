@@ -41,7 +41,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a href="/?view=briefs" className={`nav-item ${(pathname === '/' && (view === 'briefs' || archivedWeek)) || pathname === '/monthly' || pathname === '/reports' ? 'active' : ''}`}><FileText />经营简报</a>
       <div className="nav-status"><span className="status-dot" />公开资料与业务样例</div>
     </div></nav>
-    <main className="container soft-enter" data-release="v4.1">{children}</main>
+    <main className="container soft-enter" data-release="v4.2">{children}</main>
     <footer><div className="container footer-inner"><div className="footer-brand">中建西部建设<span>·</span>市场业态感知</div><div className="footer-links"><span>内部经营关联使用样例数据</span></div></div></footer>
   </>;
 }
