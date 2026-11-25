@@ -5,7 +5,7 @@ const p=(label:string,value:number,sourceId:string,date:string):Point=>({label,v
 export const categories=['需求','价格','成本','资金','增长','竞争'] as const;
 export const metrics:Metric[]=[
 {id:'util',category:'需求',name:'混凝土样本产能利用率',unit:'%',scope:'全国506家样本 · 周度',change:'周降0.38个百分点',kind:'trend',points:[p('10.27',7.04,'v30-util-1027','2026-10-27'),p('11.03',7.32,'v30-util-1103','2026-11-03'),p('11.10',7.32,'v30-util-1110','2026-11-10'),p('11.17',6.94,'v30-util-1117','2026-11-17')]},
-{id:'c30',category:'价格',name:'全国C30市场均价',unit:'元/方',scope:'全国 · 周度',change:'周环比持平',kind:'trend',points:[p('10.30',299,'v31-nat-1030','2026-10-30'),p('11.06',300,'v31-nat-1106','2026-11-06'),p('11.13',300,'v30-c30-1113','2026-11-13'),p('11.20',300,'v30-c30-1120','2026-11-20')]},
+{id:'c30',category:'价格',name:'全国C30市场参考价',unit:'元/方',scope:'全国 · 周度',change:'周环比持平',kind:'trend',points:[p('10.30',299,'v31-nat-1030','2026-10-30'),p('11.06',300,'v31-nat-1106','2026-11-06'),p('11.13',300,'v30-c30-1113','2026-11-13'),p('11.20',300,'v30-c30-1120','2026-11-20')]},
 {id:'cement',category:'成本',name:'全国水泥价格指数',unit:'元/吨',scope:'全国 · 百年建筑网 CEMPI',change:'周涨0.37%',kind:'trend',points:[p('10.30',341.14,'v31-nat-1030','2026-10-30'),p('11.06',344.56,'v31-nat-1106','2026-11-06'),p('11.13',344.32,'v30-cement-1113','2026-11-13'),p('11.20',345.58,'public-cement-week','2026-11-20')]},
 {id:'funds',category:'资金',name:'房企到位资金累计同比',unit:'%',scope:'全国 · 月度累计',change:'降幅扩大0.3个百分点',kind:'trend',points:[p('1—6月',-20.2,'v31-fund-06','2026-06-30'),p('1—7月',-20.3,'v31-fund-07','2026-07-31'),p('1—8月',-21,'v31-fund-08','2026-08-31'),p('1—9月',-21.6,'public-housing-sep','2026-09-30'),p('1—10月',-21.9,'public-housing','2026-10-31')]},
 {id:'dispatch',category:'需求',name:'混凝土样本发运量',unit:'万方',scope:'全国506家样本 · 11.11—11.17',change:'周降5.12%',kind:'number',points:[p('11.17',139.09,'public-dispatch','2026-11-17')]},
@@ -26,6 +26,7 @@ export const metrics:Metric[]=[
 {"id":"henan-projects","category":"增长","name":"河南公开披露项目签约量","unit":"万方","scope":"2026年第三季度 · 仅列披露的五个项目，不代表剩余供货量","change":"","kind":"compare",points:[p("超聚变智慧园区",13.5,"v35-q3-operations","2026-09-30"),p("故县水库灌区",13.22,"v35-q3-operations","2026-09-30"),p("洛阳贠庄东安置",12.5,"v35-q3-operations","2026-09-30"),p("郑州宇恒供应链",10.8,"v35-q3-operations","2026-09-30"),p("润沄万象中心",10.79,"v35-q3-operations","2026-09-30")]},
 {"id":"peer-growth","category":"竞争","name":"公开披露企业商混销量同比","unit":"%","scope":"2025年度 · 仅列已取得可比同比数据的企业","change":"","kind":"compare",points:[p("西部建设",-1.56,"v30-peer-own","2025-12-31"),p("海南瑞泽",-2.52,"v30-peer-hn","2025-12-31")]},
 ];
+export const categoryLabel=(category:string)=>category==='增长'?'市场机会':category;
 export const coreIds=['util','c30','cement','funds'];
 export const metricById=(id:string)=>metrics.find(m=>m.id===id);
 export function eligiblePoints(metric:Metric,cutoff='9999-12-31'){

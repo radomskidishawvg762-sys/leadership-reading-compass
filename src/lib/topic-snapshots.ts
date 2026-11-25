@@ -24,7 +24,7 @@ export const fixedTopicSnapshots: Record<PinnedId, FixedTopicSnapshot> = {
     eventIds:['EV-PUBLIC-003','EV-PUBLIC-002'],
     evidenceSourceIds:['public-housing','public-housing-sep','public-dispatch','public-price'],
     blocks:[
-      {heading:'核心判断',text:'公开数据反映房建资金与新开工仍有压力。它提示新签房建合同应更加关注首款及垫资条件，但不能据此认定某个客户已逾期或集团回款出现损失。',sourceIds:['public-housing']},
+      {heading:'核心判断',text:'房企到位资金降幅扩大，新开工仍低于上年同期。新增房建业务宜关注客户资信、首款及垫资条件，具体回款风险需结合实际付款情况判断。',sourceIds:['public-housing']},
       {heading:'主要依据',text:'国家统计局披露，2026 年前十个月房屋新开工面积同比下降 24.4%，房地产开发企业到位资金同比下降 21.9%。另有行业样本发运周环比下降 5.12%，其统计对象、时间窗与房地产统计不同，不能直接合算。',sourceIds:['public-housing','public-dispatch']},
       {heading:'建议行动',text:'对拟签房建合同优先核实付款主体、首付款日期和垫资上限；对资金来源不清晰的项目，先补充支付保障条件，再讨论承接和排产安排。',sourceIds:[]},
       {heading:'关键缺口',text:'还需逐项目核实合同首款约定、客户实际付款记录和已确认供货计划，才能判断具体项目的风险程度。',sourceIds:[]},
@@ -35,9 +35,9 @@ export const fixedTopicSnapshots: Record<PinnedId, FixedTopicSnapshot> = {
     eventIds:['EV-PUBLIC-004','EV-PUBLIC-002','EV-PUBLIC-003'],
     evidenceSourceIds:['public-investment','public-dispatch','public-price','public-housing','public-housing-sep'],
     blocks:[
-      {heading:'核心判断',text:'基建投资整体承压，但细分领域存在分化。投资结构变化可以帮助确定优先跟踪方向，不能直接视为新增混凝土订单或集团已经取得的业务。',sourceIds:['public-investment']},
+      {heading:'核心判断',text:'基建投资整体下降，航空、水运投资仍在增长。集团可关注相关交通工程的商混采购进展，投资增长不等于新增订单。',sourceIds:['public-investment']},
       {heading:'主要依据',text:'国家统计局披露，前十个月全国基础设施投资同比下降 5.1%，航空运输和水上运输等细分领域表现相对突出。与此同时，行业混凝土发运样本下降，说明投资统计与真实材料采购需求之间仍需逐项目验证。',sourceIds:['public-investment','public-dispatch']},
-      {heading:'建议行动',text:'先筛集团经营区域内已进入招标或施工阶段的交通工程，再核对实际混凝土采购计划、站点覆盖和供货能力；不以投资金额推算订单方量。',sourceIds:[]},
+      {heading:'建议行动',text:'优先关注集团经营区域内已进入招标或施工阶段的交通工程，结合商混采购计划、厂站供应范围和产能，评估供货机会。',sourceIds:[]},
       {heading:'关键缺口',text:'需要可验证的项目采购公告、施工进度和可供货区域清单，才能确定哪些机会应进入重点跟踪。',sourceIds:[]},
     ],
   },
@@ -46,7 +46,7 @@ export const fixedTopicSnapshots: Record<PinnedId, FixedTopicSnapshot> = {
     eventIds:['EV-PUBLIC-006'],
     evidenceSourceIds:['public-fuzhou-green','public-ezhou-green'],
     blocks:[
-      {heading:'核心判断',text:'福州和鄂州的绿色建材信息更新，提示当地政府采购与项目招采可能要求更细的产品和认证核对；不能把两地名录直接解释为全国统一门槛。',sourceIds:['public-fuzhou-green','public-ezhou-green']},
+      {heading:'核心判断',text:'福州、鄂州更新绿色建材名录，参与当地项目招采时宜关注产品认证等级、适用范围及证书有效期。两地名录不是全国统一要求。',sourceIds:['public-fuzhou-green','public-ezhou-green']},
       {heading:'主要依据',text:'福州发布第八批绿色建材产品信息名录，涉及预拌混凝土等 30 类产品、合计 72 家企业；鄂州更新了包含预拌混凝土的产品信息清单，涉及产品类型、星级和证书状态。',sourceIds:['public-fuzhou-green','public-ezhou-green']},
       {heading:'建议行动',text:'在相关地区参与政府采购或投标前，先对照项目招采条款检查产品品类、证书星级、有效期及适用范围；仅凭入选地方名录不能确认具体项目投标资格。',sourceIds:[]},
       {heading:'关键缺口',text:'仍需核实具体项目采购文件、拟供产品的认证信息与证书有效期。',sourceIds:[]},
