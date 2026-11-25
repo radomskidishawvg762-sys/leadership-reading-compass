@@ -1,3 +1,4 @@
+import {plainBusiness,pickDisplay,issueKinds} from './executive-home';
 import {events,getSource} from './market-data';
 import {metrics,eligiblePoints} from './market-monitor';
 import {currentCutoff} from './reading-editions';
@@ -12,7 +13,7 @@ export function snapshotInput(){
  const sources=ids.flatMap(id=>{const s=getSource(id);return s?.url&&s.kind==='外部材料'&&s.date<=currentCutoff?[{id:s.id,title:s.title,excerpt:s.excerpt.slice(0,450)}]:[];});
  return {candidates,indicators,sources,cutoff:currentCutoff};
 }
-const clean=(x:unknown,max:number)=>typeof x==='string'&&x.trim()?x.trim().slice(0,max):'';
+const clean=(x:unknown,max:number)=>typeof x==='string'&&x.trim()?plainBusiness(x).slice(0,max):'';
 export function validateSnapshot(raw:unknown,input= snapshotInput()):Omit<MarketSnapshot,'generatedAt'|'cutoff'|'fingerprint'>|null{
  if(!raw||typeof raw!=='object')return null;
  const v=raw as Record<string,unknown>;
@@ -22,7 +23,7 @@ export function validateSnapshot(raw:unknown,input= snapshotInput()):Omit<Market
  const items:PulseItem[]=[];
  for(const row of v.items){if(!row||typeof row!=='object')continue;const e=input.candidates.find(e=>e.id===row.eventId);if(!e||items.some(x=>x.eventId===e.id))continue;
  const refs=ids(row.sourceIds,e.sourceIds.filter(id=>all.includes(id))),conclusion=clean(row.conclusion,180),advice=clean(row.advice,90);
- if(refs.length&&conclusion&&advice)items.push({eventId:e.id,sourceIds:refs,conclusion,advice});}
+ if(refs.length&&conclusion&&advice)items.push({eventId:e.id,sourceIds:refs,conclusion,advice,presentation:pickDisplay(events.find(event=>event.id===e.id)!,typeof row.presentation==='string'?row.presentation:undefined)});}
  // Do not publish a partial replacement: every public topic must have a real suggestion.
  if(items.length!==input.candidates.length||!items.length)return null;
  const focusIds=ids(v.focusIds,items.map(i=>i.eventId)).slice(0,4);if(!focusIds.length)return null;

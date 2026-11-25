@@ -1,4 +1,4 @@
-export type PulseItem={eventId:string;conclusion:string;advice:string;sourceIds:string[]};
+export type PulseItem={eventId:string;conclusion:string;advice:string;sourceIds:string[];presentation?:'number'|'trend'|'compare'|'ring'|'table'|'text'};
 export type PulseAnalysis={summary:string;sourceIds:string[];items:PulseItem[];generatedAt:string};
 export const pulseQuery='市场需求、原料价格、基建投资、房企资金、绿色建材';
 export function shortSummary(text:string):string{

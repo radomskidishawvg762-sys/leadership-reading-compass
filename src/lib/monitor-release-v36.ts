@@ -1,7 +1,7 @@
 // AI-authored, evidence-based editorial conclusions published with V3.6, not generated on page load.
 export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
   "需求": {
-    "text": "行业样本发运量和产能利用率下降，房建新开工仍低于上年同期。公司三季度新签量同比增长、销量下降，建议关注各区域在手订单的供货进度及后续产量保障。",
+    "text": "行业样本供应量和产能利用率下降，房建新开工仍低于上年同期。公司三季度新签量同比增长、销量下降，建议关注各区域在手订单的供货进度及后续产量保障。",
     "sourceIds": [
       "public-dispatch",
       "v30-util-1117",
