@@ -10,13 +10,13 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "价格": {
-    "text": "全国混凝土均价保持稳定，重庆、成都价格上涨，武汉价格下降。建议结合各地区实际销售价格和采购成本，评估项目盈利情况，优先关注公司业务规模较大的地区。",
+    "text": "全国C30市场参考价持平；成都周涨5元/方、重庆周涨20元/方、武汉周降5元/方。建议重点关注四川、重庆、湖北的价格变化；武汉10月工程信息价通知另显示混凝土价格约上涨3元/方，两类数据统计期与口径不同。",
     "sourceIds": [
       "v30-c30-1120",
       "v31-chongqing",
       "public-chengdu",
       "v31-wuhan",
-      "v32-group"
+      "v32-group","v38-wh-info-oct"
     ]
   },
   "成本": {
@@ -38,15 +38,15 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   },
   "增长": {
-    "text": "基础设施投资整体下降，但航空、水运投资仍然增长。公司已在城市外基础设施领域取得签约业务，建议结合经营区域和项目施工进度，评估相关建设项目的供货机会。",
+    "text": "全国基础设施投资整体下降，航空和水运投资增长。川渝共建重点项目仍在推进；重庆沿江南线高速进入施工阶段，部分产业园主体已封顶。建议结合项目实际采购阶段评估集团供应机会。",
     "sourceIds": [
       "v32-investment",
       "v35-h1-strategy",
-      "v35-q3-operations"
+      "v35-q3-operations","v38-cq-road","v38-cq-sichuan"
     ]
   },
   "竞争": {
-    "text": "公开披露的商混企业销量规模差异明显，公司2025年销量同比下降。四川、广东等地区收入占比较高，建议重点关注主要经营区域的市场份额变化、销售价格和客户稳定性。",
+    "text": "公开披露的商混企业销量规模差异明显，公司2025年销量同比下降。四川、广东等地区收入占比较高，建议重点关注四川、广东等地区的销售价格和竞争动态；市场份额须待可靠行业分母。",
     "sourceIds": [
       "v30-peer",
       "v30-peer-own",
@@ -54,5 +54,5 @@ export const monitorRelease:Record<string,{text:string;sourceIds:string[]}>={
     ]
   }
 };
-export const monitorReleaseDate='2026-11-24';
+export const monitorReleaseDate='2026-11-25';
 export const monitorCutoff='2026-11-20';

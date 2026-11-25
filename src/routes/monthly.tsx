@@ -1,3 +1,4 @@
+import {OpportunityContext} from '@/components/market/opportunity-context';
 import {GroupContext} from '@/components/market/group-context';
 import {CoreMonitoring,EvidenceNote,MetricGraphic} from '@/components/market/market-visual';
 import {eventMetric,eligiblePoints} from '@/lib/market-monitor';
@@ -60,7 +61,7 @@ function Monthly() {
               <p><strong>对集团的影响</strong>{implication}</p>
               <p><strong>建议关注</strong>{watch}</p>
             </div>
-            {event.public&&<GroupContext eventId={event.id} cutoff={issue.end}/>}<EvidenceNote ids={event.sources}/><EventActions eventId={eventId} scope={scope} />
+            {event.public&&<GroupContext eventId={event.id} cutoff={issue.end}/>} {event.id==="EV-PUBLIC-004"&&<OpportunityContext cutoff={issue.end} compact/>}<EvidenceNote ids={event.sources}/><EventActions eventId={eventId} scope={scope} />
           </div>
         </section>
       ))}

@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {InformationPrice,OpportunityContext,RegionChanges} from './opportunity-context';
 import {PresentationTables} from './monitor-tables';
 import {monitorRelease,monitorReleaseDate,monitorCutoff} from '@/lib/monitor-release-v36';
 import {metricNotes,type Observation} from '@/lib/market-snapshot';
@@ -8,7 +9,7 @@ import {Link} from '@tanstack/react-router';
 import {ArrowUpRight,FileText} from 'lucide-react';
 import {Bar,BarChart,CartesianGrid,Cell,Line,LineChart,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts';
 import {getSource,formatDate} from '@/lib/market-data';
-import {categories,coreIds,metricById,metrics,eligiblePoints,chartKind,regionalExposure,cityProvince,type Metric} from '@/lib/market-monitor';
+import {categories,categoryLabel,coreIds,metricById,metrics,eligiblePoints,chartKind,regionalExposure,cityProvince,type Metric} from '@/lib/market-monitor';
 export function EvidenceNote({ids}:{ids:string[]}){
  const sources=[...new Set(ids)].flatMap(id=>{const s=getSource(id);return s?[s]:[]});
  if(!sources.length)return null;
@@ -44,9 +45,9 @@ export function MetricPanel({metric,compact=false,cutoff,observation}:{metric:Me
  const data=eligiblePoints(metric,cutoff);if(!data.length)return null;
  const last=data.at(-1)!;const showLatest=metric.kind!=='compare';
  return <section className={'v30-metric '+(compact?'v30-metric-small':'')}>
- <div className="v30-metric-label">{compact?({'需求':'市场需求','价格':'市场价格','成本':'成本环境','资金':'资金环境'} as Record<string,string>)[metric.category]:metric.name}</div>
+ <div className="v30-metric-label">{metric.name}</div>
  {showLatest&&<div className="v30-value">{last.value.toLocaleString('zh-CN')}<small>{metric.unit}</small></div>}
- {compact&&<div className="v30-metric-name">{metric.name}</div>}
+ {compact&&<div className="v30-metric-name">{({'需求':'市场需求','价格':'市场价格','成本':'成本环境','资金':'资金环境'} as Record<string,string>)[metric.category]}</div>}
  {metric.id==='investment'&&<div className="v37-baseline"><span>全国基础设施投资（不含电力等）</span><strong>{data.find(p=>p.label==='基建整体')?.value??'—'}%</strong></div>}{(!showLatest||data.length>1)&&<MetricGraphic metric={metric} compact={compact} cutoff={cutoff}/>}
  <div className="v30-metric-meta">{!cutoff&&metric.change&&<strong>{metric.change} · </strong>}{metric.scope} · {last.date}</div>
  {!compact&&<p className="v33-metric-note">{metricNotes[metric.id]}</p>}{!compact&&observation&&observation.sourceIds.every(id=>data.some(p=>p.sourceId===id))&&<div className="v33-observation"><strong>AI观察</strong> {observation.text}<EvidenceNote ids={observation.sourceIds}/></div>}{!compact&&data.length>1&&<details className="v32-data-table"><summary>查看完整数据表</summary><table className="v31-compare-table"><thead><tr><th>观测对象／期间</th><th>{metric.unit}</th></tr></thead><tbody>{data.map(d=><tr key={d.label}><td>{d.label}</td><td>{d.value.toLocaleString('zh-CN')}</td></tr>)}</tbody></table></details>}<EvidenceNote ids={data.map(d=>d.sourceId)}/></section>;
@@ -57,9 +58,9 @@ export function CoreMonitoring({cutoff}:{cutoff?:string}){
 export function MarketMonitor(){
  const snapshot=useMarketSnapshot();const [category,setCategory]=useState<string>('需求');const [period,setPeriod]=useState('all');
  return <div className="v30-monitor v36-monitor"><div className="v35-page-title"><h1 className="v37-sr-only">市场监测</h1></div>
- <div className="v30-tabs v37-monitor-tabs" role="group" aria-label="监测类别">{categories.map(c=><button key={c} className={category===c?'active':''} onClick={()=>{setCategory(c);setPeriod('all')}}>{c}</button>)}</div>
+ <div className="v30-tabs v37-monitor-tabs" role="group" aria-label="监测类别">{categories.map(c=><button key={c} className={category===c?'active':''} onClick={()=>{setCategory(c);setPeriod('all')}} >{categoryLabel(c)}</button>)}</div>
  <section className="v36-monitor-summary"><div className="v36-summary-title"><h2>AI 综合结论</h2><small>发布于 {monitorReleaseDate} · 资料截至 {monitorCutoff} · 全部资料综合判断</small></div><p>{monitorRelease[category].text}</p><EvidenceNote ids={monitorRelease[category].sourceIds}/></section>
  <div className="v30-monitor-controls"><label>趋势图范围 <select className="select-control" value={period} onChange={e=>setPeriod(e.target.value)}><option value="all">全部已收录</option><option value="latest">最近四期</option></select></label><Link to="/topics" search={{q:({需求:'市场需求与发运量',价格:'混凝土价格',成本:'原料成本',资金:'房建资金',增长:'基建投资',竞争:'市场竞争'} as Record<string,string>)[category],window:'all'}}>基于指标发起研判 <ArrowUpRight size={14}/></Link></div>
- <div className="v30-monitor-grid">{metrics.filter(m=>m.category===category&&!['regional-level','regional-cement-level','regional-cement-change','group-funds','group-receivable-concentration','group-strategy-sign','henan-projects','peer-growth','peers','group-regions'].includes(m.id)).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div><PresentationTables category={category}/>{(category==="价格"||category==="成本")&&<PriceCostComparison/>}
+ {category==="价格"&&<RegionChanges/>}{category==="增长"&&<OpportunityContext/>}<div className="v30-monitor-grid">{metrics.filter(m=>m.category===category&&!['regional-level','regional-cement-level','regional-cement-change','group-funds','group-receivable-concentration','group-strategy-sign','henan-projects','peer-growth','peers','group-regions'].includes(m.id)).map(m=><MetricPanel key={m.id} observation={period==='all'?snapshot.result?.observations.find(o=>o.metricId===m.id):undefined} metric={period==='latest'&&m.kind==='trend'?{...m,points:m.points.slice(-4)}:m}/>)}</div><PresentationTables category={category}/>{category==="价格"&&<InformationPrice/>}{(category==="价格"||category==="成本")&&<PriceCostComparison/>}
  </div>;
 }
