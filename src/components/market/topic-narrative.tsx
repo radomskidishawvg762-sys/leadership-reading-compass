@@ -91,7 +91,7 @@ function RichText({value}:{value:string}){
     segment.type==='bold'?<strong key={i}>{segment.text}</strong>:
     segment.type==='italic'?<em key={i}>{segment.text}</em>:
     segment.type==='code'?<code key={i}>{segment.text}</code>:
-    <span key={i}>{segment.text}</span>)}</>;
+    <span key={i}>{segment.text.replace(/\*+/g,'')}</span>)}</>;
 }
 function NarrativeLine({text,research,sourceIds,eventIds}:{
   text:string;research:TopicResearch;sourceIds:string[];eventIds:string[];

@@ -31,9 +31,15 @@ try {
   if(await page.getByText('近七日重点变化',{exact:true}).count())throw Error('weekly gate still visible');
   await page.getByRole('heading',{name:'核心市场监测'}).waitFor();
   await page.getByRole('heading',{name:'当前 AI 综合研判'}).waitFor();
-  if(await page.locator('main').getAttribute('data-release')!=='v4.0')throw Error('wrong release marker');
+  if(await page.locator('main').getAttribute('data-release')!=='v4.1')throw Error('wrong release marker');
   await page.getByText('全国C30市场参考价',{exact:true}).first().waitFor();
-  await page.getByRole('heading',{name:'集团经营地区 · 本期价格变化'}).waitFor();
+  await page.getByRole('button',{name:'图表',exact:true}).click();
+  if(await page.locator('.v41-core-chart').count()!==4)throw Error('all four charts must render');
+  if(await page.locator('.v41-core-number').count())throw Error('numeric mode remained visible');
+  await page.getByRole('button',{name:'数值',exact:true}).click();
+  if(await page.locator('.v41-core-chart').count()||await page.locator('.v41-core-number').count()!==4)throw Error('numeric mode failed');
+  if(await page.locator('.v38-region-changes').count())throw Error('duplicate regional block');
+  await page.getByText('集团经营关联',{exact:true}).first().waitFor();
   await page.getByText('河南营业收入',{exact:true}).first().waitFor();
   await page.getByText('河南5项披露项目签约量',{exact:true}).first().waitFor();
   const first=await page.locator('.v30-dynamic').boundingBox();if(!first||first.y>950)throw Error('home header too tall: '+first?.y);
